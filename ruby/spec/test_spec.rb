@@ -1,6 +1,6 @@
 describe Object do
 
-  describe '#Pruebas tp' do
+  describe '#Tests 1era parte' do
     it 'paso test de val' do
       expect(val(5).call(5)).to be true
       expect(val(5).call('5')).to be false
@@ -50,6 +50,27 @@ describe Object do
       expect(duck(:fly).call(a_dragon)).to be true
       expect(duck(:to_s).call(Object.new)).to be true
 
+      expect(duck(:hace_tu_gracia).call(psyduck)).to be false
+
+    end
+  end
+
+  describe '#Tests 2da parte' do
+    it 'paso tests de and' do
+      expect(duck(:+).and(type(Fixnum), val(5)).call(5)).to be true
+      expect(duck(:hola).and(type(Fixnum), val(5)).call(5)).to be false
+      expect(duck(:+).and(type(Fixnum), val(8)).call(5)).to be false
+    end
+
+    it 'paso tests de or' do
+      expect(duck(:+).or(duck(:hola), val(4)).call(5)).to be true
+      expect(duck(:hola).or(duck(:+), val(4)).call(5)).to be true
+      expect(duck(:hola).or(duck(:otro_sym), val(4)).call(5)).to be false
+    end
+
+    it 'paso tests de not' do
+      expect(type(Integer).not.call(5)).to be false
+      expect(duck(:hola).not.call(4)).to be true
     end
   end
 

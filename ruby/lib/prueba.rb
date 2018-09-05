@@ -25,10 +25,20 @@ class Object
       un_obj.entiende_mensaje(symbol) && (symbols.empty? ? true : symbols.any? {|sym| un_obj.entiende_mensaje(sym)})
     end
   end
+end
 
+class Proc
   # 2da Parte
   def and(*matchers)
-    
+    Proc.new {|un_obj| matchers.all? {|matcher| matcher.call(un_obj)} ? call(un_obj) : false}
+  end
+
+  def or(*matchers)
+    Proc.new {|un_obj| matchers.any? {|matcher| matcher.call(un_obj)} ? true : call(un_obj)}
+  end
+
+  def not
+    Proc.new {|un_obj| !call(un_obj)}
   end
 end
 
