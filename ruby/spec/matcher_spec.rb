@@ -15,6 +15,10 @@ describe 'Tests para matchers' do
     pato
   end
 
+  let :an_array do
+    an_array = [1,2,3,4]
+  end
+
   it 'duck matchea con cuack y fly' do
     matcher = Matcher.duck :cuack, :fly
     expect(matcher.call(duck)).to be true
@@ -45,5 +49,17 @@ describe 'Tests para matchers' do
 
   it 'matchea por tipo' do
     expect(Matcher.type(String).call('un string')).to be true
+  end
+
+  it 'debe matchear con la lista' do
+    expect(Matcher.list([1,2,3,4], true).call(an_array)).to be true
+  end
+
+  it 'debe matchear si la lista empieza igual' do
+    expect(Matcher.list([1,2,3]).call(an_array)).to be true
+  end
+
+  it 'no debe matchear si no es una lista' do
+    expect(Matcher.list([1,2,3]).call('holis')).to be false
   end
 end

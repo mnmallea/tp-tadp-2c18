@@ -25,4 +25,7 @@ describe 'Tests para matchers múltiples' do
     expect(Matcher.type(String).not.call(25.5)).to be true
   end
 
+  it 'debería permitir anidar matchers' do
+    expect(Matcher.duck(:+).or(Matcher.duck(:filter).and(Matcher.val(5))).call 5).to be true
+  end
 end

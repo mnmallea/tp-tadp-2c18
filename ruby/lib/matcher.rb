@@ -42,11 +42,7 @@ class Matcher
 
   #todo match de tamaño
   def self.list(lista, matchear_tamanio = false)
-    tamanio = lista.size
-    Matcher.new do
-    |una_lista|
-      type(Array).call(lista) && una_lista.take(tamanio) == lista
-    end
+    ListMatcher.new lista, matchear_tamanio
   end
 
   def self.duck(*mensajes)
@@ -60,6 +56,26 @@ class Matcher
     end
   end
 
+end
+
+class ListMatcher
+  include OperacionesMatchers
+  def initialize(list, should_match_size)
+    @list = list
+    @should_match_size = should_match_size
+  end
+
+  def call(un_objeto)
+    Matcher.type(Array).call(un_objeto) && self.matchea_con_lista(un_objeto)
+  end
+
+  def matchea_con_lista(una_lista)
+    @list == una_lista.take(@list.size) && self.matchea_tamanio(una_lista)
+  end
+
+  def matchea_tamanio(una_lista)
+    !@should_match_size || una_lista.size == @list.size
+  end
 end
 
 
