@@ -47,17 +47,3 @@ describe 'Tests para matchers' do
     expect(Matcher.type(String).call('un string')).to be true
   end
 end
-
-describe 'Tests para matchers múltiples' do
-  it 'matchea por tipo y valor' do
-    resultado = Matcher.duck(:+).and(Matcher.type(Fixnum), Matcher.val(5)).call(5)
-    expect(resultado).to be true
-  end
-
-  it 'no matchea si un matcher de la composición es falso' do
-    resultado = Matcher.duck(:+).and(Matcher.type(Fixnum), Matcher.val(51)).call(5)
-    expect(resultado).to be false
-  end
-
-
-end

@@ -1,4 +1,22 @@
+module OperacionesMatchers
+  def and(*otros_matchers)
+    AllMatcher.new(otros_matchers << self)
+  end
+
+  def or(*otros_matchers)
+    AnyMatcher.new(otros_matchers << self)
+  end
+
+  def not
+    Matcher.new do
+    |un_objeto|
+      !self.call(un_objeto)
+    end
+  end
+end
+
 class Matcher
+  include OperacionesMatchers
 
   def initialize(&una_lambda)
     @lambda = una_lambda
@@ -42,18 +60,29 @@ class Matcher
     end
   end
 
-  def and(*otros_matchers)
-    MultipleMatcher.new(otros_matchers << @lambda)
-  end
 end
 
-class MultipleMatcher
+
+class AllMatcher
+  include OperacionesMatchers
 
   def initialize(unos_matchers)
     @matchers = unos_matchers
   end
 
   def call(un_objeto)
-    @matchers.all?{|matcher| matcher.call(un_objeto)}
+    @matchers.all? {|matcher| matcher.call(un_objeto)}
+  end
+end
+
+class AnyMatcher
+  include OperacionesMatchers
+
+  def initialize(unos_matchers)
+    @matchers = unos_matchers
+  end
+
+  def call(un_objeto)
+    @matchers.any? {|matcher| matcher.call(un_objeto)}
   end
 end
