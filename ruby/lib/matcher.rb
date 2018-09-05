@@ -1,13 +1,22 @@
-class MatcherFactory
+class Matcher
+
+  def initialize(&una_lambda)
+    @lambda = una_lambda
+  end
+
+  def call(un_objeto)
+    @lambda.call un_objeto
+  end
+
   def self.val(un_objeto)
-    proc do
+    Matcher.new do
     |otro_objeto|
       otro_objeto == un_objeto
     end
   end
 
   def self.type(un_tipo)
-    proc do
+    Matcher.new do
     |un_objeto|
       un_objeto.is_a? un_tipo
     end
@@ -16,14 +25,14 @@ class MatcherFactory
   #todo match de tamaño
   def self.list(lista, matchear_tamanio = false)
     tamanio = lista.size
-    proc do
+    Matcher.new do
     |una_lista|
       type(Array).call(lista) && una_lista.take(tamanio) == lista
     end
   end
 
   def self.duck(*mensajes)
-    proc do
+    Matcher.new do
     |un_objeto|
       mensajes_objeto = un_objeto.methods
       mensajes.all? do
@@ -33,4 +42,18 @@ class MatcherFactory
     end
   end
 
+  def and(*otros_matchers)
+    MultipleMatcher.new(otros_matchers << @lambda)
+  end
+end
+
+class MultipleMatcher
+
+  def initialize(unos_matchers)
+    @matchers = unos_matchers
+  end
+
+  def call(un_objeto)
+    @matchers.all?{|matcher| matcher.call(un_objeto)}
+  end
 end
