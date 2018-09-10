@@ -13,18 +13,23 @@ class Object
   end
 
   def list(un_array, match_size=true)
-    Proc.new {|otro_array| match_size ? val(otro_array).call(un_array) : un_array.son_n_iguales?(otro_array)}
-  end
-
-  def entiende_mensaje(sym)
-    self.public_methods.include?(sym)
+    Proc.new {|otro_array| match_size ? un_array.son_iguales?(otro_array) : un_array.son_n_iguales?(otro_array)}
   end
 
   def duck(symbol, *symbols)
     Proc.new do |un_obj|
-      un_obj.entiende_mensaje(symbol) && (symbols.empty? ? true : symbols.any? {|sym| un_obj.entiende_mensaje(sym)})
+      un_obj.respond_to?(symbol) && (symbols.empty? ? true : symbols.all? {|sym| un_obj.respond_to?(sym)})
     end
   end
+
+  def with(*matchers) #No hace falta pasar el bloque como parametro aca
+    Proc.new do |obj|
+      if (matchers.all? {|m| m.call(obj)})
+        yield
+      end
+    end
+  end
+
 end
 
 class Proc
@@ -44,6 +49,19 @@ end
 
 class Array
   def son_n_iguales?(otro_array)
-    self == otro_array.first(self.length)
+    son_iguales?(otro_array.first(self.length))
+  end
+
+  def son_iguales?(otro_array)
+    self.length == otro_array.length && self.map.with_index {
+    |obj, i| type(Symbol).call(self[i]) ? obj.call(obj) : val(obj).call(otro_array[i])
+    }.all?
+  end
+end
+
+class Symbol
+  def call(algo)
+    binding.local_variable_set(self, algo)
+    true
   end
 end

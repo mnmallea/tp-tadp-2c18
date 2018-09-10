@@ -1,6 +1,10 @@
 describe Object do
 
-  describe '#Tests 1era parte' do
+  describe 'Tests 1era parte' do
+    it 'paso test de variable' do
+      expect(:a_variable_name.call('anything')).to be true
+    end
+
     it 'paso test de val' do
       expect(val(5).call(5)).to be true
       expect(val(5).call('5')).to be false
@@ -26,6 +30,8 @@ describe Object do
       expect(list([2, 1, 3, 4], true).call(an_array)).to be false
 
       expect(list([1, 2, 3]).call(an_array)).to be false
+
+      expect(list([:a, :b, :c, :d]).call(an_array)).to be true
     end
 
     it 'paso test de duck' do
@@ -55,7 +61,7 @@ describe Object do
     end
   end
 
-  describe '#Tests 2da parte' do
+  describe 'Tests 2da parte' do
     it 'paso tests de and' do
       expect(duck(:+).and(type(Fixnum), val(5)).call(5)).to be true
       expect(duck(:hola).and(type(Fixnum), val(5)).call(5)).to be false
@@ -71,6 +77,12 @@ describe Object do
     it 'paso tests de not' do
       expect(type(Integer).not.call(5)).to be false
       expect(duck(:hola).not.call(4)).to be true
+    end
+  end
+
+  describe 'Tests 3era parte' do
+    it 'paso tests de with' do
+      #expect(with(type(String), :a_string) { a_string.length }.call("Hola")).to be 4
     end
   end
 
