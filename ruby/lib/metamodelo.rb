@@ -1,9 +1,10 @@
-class Module
-=begin
-  def matches?(objeto, &bloque)
-    # todo
-  end
-=end
+require_relative 'pattern'
+require_relative 'matcher'
+
+class Object
+  include Match
+  include Pattern
+  include MatcherFactory
 end
 
 class Symbol

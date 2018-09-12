@@ -15,6 +15,39 @@ module OperacionesMatchers
   end
 end
 
+
+module MatcherFactory
+  def val(un_objeto)
+    Matcher.new do
+    |otro_objeto|
+      otro_objeto == un_objeto
+    end
+  end
+
+  def type(un_tipo)
+    Matcher.new do
+    |un_objeto|
+      un_objeto.is_a? un_tipo
+    end
+  end
+
+  #todo match de tamaño
+  def list(lista, matchear_tamanio = false)
+    ListMatcher.new lista, matchear_tamanio
+  end
+
+  def duck(*mensajes)
+    Matcher.new do
+    |un_objeto|
+      mensajes_objeto = un_objeto.methods
+      mensajes.all? do
+      |mensaje|
+        mensajes_objeto.include? mensaje
+      end
+    end
+  end
+end
+
 class Matcher
   include OperacionesMatchers
 
@@ -24,36 +57,6 @@ class Matcher
 
   def call(un_objeto)
     @lambda.call un_objeto
-  end
-
-  def self.val(un_objeto)
-    Matcher.new do
-    |otro_objeto|
-      otro_objeto == un_objeto
-    end
-  end
-
-  def self.type(un_tipo)
-    Matcher.new do
-    |un_objeto|
-      un_objeto.is_a? un_tipo
-    end
-  end
-
-  #todo match de tamaño
-  def self.list(lista, matchear_tamanio = false)
-    ListMatcher.new lista, matchear_tamanio
-  end
-
-  def self.duck(*mensajes)
-    Matcher.new do
-    |un_objeto|
-      mensajes_objeto = un_objeto.methods
-      mensajes.all? do
-      |mensaje|
-        mensajes_objeto.include? mensaje
-      end
-    end
   end
 
 end
