@@ -82,7 +82,13 @@ describe Object do
 
   describe 'Tests 3era parte' do
     it 'paso tests de with' do
-      #expect(with(type(String), :a_string) { a_string.length }.call("Hola")).to be 4
+      #expect(with(type(String), :a_string).call("Hola")).to be :a_string
+    end
+  end
+
+  describe 'Tests 4ta parte' do
+    it 'paso tests de matches' do
+
     end
   end
 
