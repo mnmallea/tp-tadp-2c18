@@ -9,11 +9,13 @@ describe Prueba do
   end
 
   it 'should' do
-    matches?(x) do
+    algo = matches?(x) do
       with(list([:a, val(2), duck(:+)])) {a + 2}
       with(list([1, 2, 3])) {'acá no llego'}
-      otherwise {'acá no llego'}
+      otherwise {'acá no llego v2'}
     end
+
+    puts algo
   end
 
 end

@@ -6,6 +6,6 @@ require_relative 'lib/pattern'
 
 x = 1
 matches? x do
-  with(val(1), type(Integer)){puts "Blah"}.call x
-  otherwise{puts "JAJAJ XD"}
+  with(val(1), type(Integer)){puts x}
+  otherwise{puts "hola"}
 end
