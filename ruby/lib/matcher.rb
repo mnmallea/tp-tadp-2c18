@@ -22,7 +22,6 @@ module MatcherFactory
     TypeMatcher.new un_tipo
   end
 
-  #todo match de tamaño
   def list(lista, matchear_tamanio = false)
     ListMatcher.new lista, matchear_tamanio
   end
@@ -30,12 +29,20 @@ module MatcherFactory
   def duck(*mensajes)
     DuckMatcher.new mensajes
   end
+
+  def call(un_objeto)
+    val(self).call(un_objeto)
+  end
+
+  def bind_to(un_contexto, un_objeto)
+
+  end
 end
 
 class Matcher
   include OperacionesMatchers
 
-  def bind_to(un_contexto)
+  def bind_to(un_contexto, un_objeto)
 
   end
 
@@ -91,21 +98,28 @@ end
 class ListMatcher
   include OperacionesMatchers
 
-  def initialize(list, should_match_size)
+  def initialize(list, matchea_tamanio)
     @list = list
-    @should_match_size = should_match_size
+    @debe_matchear_tamanio = matchea_tamanio
   end
 
   def call(un_objeto)
-    Matcher.type(Array).call(un_objeto) && self.matchea_con_lista(un_objeto)
+    type(Array).call(un_objeto) && self.matchea_tamanio(un_objeto) && self.matchea_con_lista(un_objeto)
   end
 
   def matchea_con_lista(una_lista)
-    @list == una_lista.take(@list.size) && self.matchea_tamanio(una_lista)
+    @list.zip(una_lista).reduce(true) do
+    |un_bool, arr|
+      arr[0].call(arr[1]) && un_bool
+    end
   end
 
   def matchea_tamanio(una_lista)
-    !@should_match_size || una_lista.size == @list.size
+    (!@debe_matchear_tamanio && una_lista.size >= @list.size) || una_lista.size == @list.size
+  end
+
+  def bind_to(un_contexto, una_lista)
+    @list.zip(una_lista).each {|matcher, elemento_lista| matcher.bind_to un_contexto, elemento_lista}
   end
 end
 

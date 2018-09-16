@@ -12,4 +12,8 @@ class Symbol
   def call(un_objeto)
     true
   end
+
+  def bind_to(un_contexto, un_objeto)
+    un_contexto.bind self, un_objeto
+  end
 end
