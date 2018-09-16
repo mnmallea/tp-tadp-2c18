@@ -25,9 +25,8 @@ describe 'Tests para matchers' do
     expect(matcher.call(patito)).to be true
   end
 
-  it 'duck matchea con ningun mensaje' do
-    matcher = duck
-    expect(matcher.call(patito)).to be true
+  it 'No deberia haber duck sin mensajes' do
+    expect {duck}.to raise_error ArgumentError
   end
 
   it 'duck no matchea con nadar' do

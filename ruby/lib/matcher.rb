@@ -26,7 +26,8 @@ module MatcherFactory
     ListMatcher.new lista, matchear_tamanio
   end
 
-  def duck(*mensajes)
+  def duck(un_mensaje, *unos_mensajes)
+    mensajes = unos_mensajes << un_mensaje
     DuckMatcher.new mensajes
   end
 
