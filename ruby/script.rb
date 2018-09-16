@@ -37,11 +37,11 @@ matches? arr do
   end
 end
 
-matches? arr do
-  with(list([type(String)]))do
-    'acá no debería entrar'
-  end
-  with(list([:a, :b, :c], true)) do
-    puts (a + b + c)
-  end
-end
+# matches? arr do
+#   with(list([type(String)]))do
+#     'acá no debería entrar'
+#   end
+#   with(list([:a, :b, :c], true)) do
+#     puts (a + b + c)
+#   end
+# end

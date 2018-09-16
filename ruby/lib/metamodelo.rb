@@ -3,8 +3,7 @@ require_relative 'matcher'
 require_relative 'contexto'
 
 class Object
-  include Match
-  include Pattern
+  include Matches
   include MatcherFactory
 end
 
