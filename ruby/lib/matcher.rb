@@ -8,27 +8,18 @@ module OperacionesMatchers
   end
 
   def not
-    Matcher.new do
-    |un_objeto|
-      !self.call(un_objeto)
-    end
+    NotMatcher.new self
   end
 end
 
 
 module MatcherFactory
   def val(un_objeto)
-    Matcher.new do
-    |otro_objeto|
-      otro_objeto == un_objeto
-    end
+    ValMatcher.new un_objeto
   end
 
   def type(un_tipo)
-    Matcher.new do
-    |un_objeto|
-      un_objeto.is_a? un_tipo
-    end
+    TypeMatcher.new un_tipo
   end
 
   #todo match de tamaño
@@ -37,32 +28,69 @@ module MatcherFactory
   end
 
   def duck(*mensajes)
-    Matcher.new do
-    |un_objeto|
-      mensajes_objeto = un_objeto.methods
-      mensajes.all? do
-      |mensaje|
-        mensajes_objeto.include? mensaje
-      end
-    end
+    DuckMatcher.new mensajes
   end
 end
 
 class Matcher
   include OperacionesMatchers
 
-  def initialize(&una_lambda)
-    @lambda = una_lambda
-  end
+  def bind_to(un_contexto)
 
-  def call(un_objeto)
-    @lambda.call un_objeto
   end
 
 end
 
+class NotMatcher < Matcher
+  def initialize(un_matcher)
+    @matcher = un_matcher
+  end
+
+  def call(un_objeto)
+    !@matcher.call(un_objeto)
+  end
+end
+
+class TypeMatcher < Matcher
+
+  def initialize(un_tipo)
+    @tipo = un_tipo
+  end
+
+  def call(un_objeto)
+    un_objeto.is_a? @tipo
+  end
+
+end
+
+class ValMatcher < Matcher
+
+  def initialize(un_objeto)
+    @objeto = un_objeto
+  end
+
+  def call(un_objeto)
+    @objeto == un_objeto
+  end
+end
+
+class DuckMatcher < Matcher
+  def initialize(unos_mensajes)
+    @mensajes = unos_mensajes
+  end
+
+  def call(un_objeto)
+    mensajes_objeto = un_objeto.methods
+    @mensajes.all? do
+    |mensaje|
+      mensajes_objeto.include? mensaje
+    end
+  end
+end
+
 class ListMatcher
   include OperacionesMatchers
+
   def initialize(list, should_match_size)
     @list = list
     @should_match_size = should_match_size

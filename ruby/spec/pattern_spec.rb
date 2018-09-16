@@ -1,4 +1,4 @@
-describe Prueba do
+describe 'Prueba' do
 
   x = [1, 2, 3]
 
