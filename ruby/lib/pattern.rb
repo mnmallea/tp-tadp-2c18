@@ -37,7 +37,7 @@ end
 
 class NoMatch
   def value
-    raise 'Non exhaustive patterns'
+    raise MatchError, 'Non exhaustive patterns'
   end
 
   def ejecutar_bloque(un_contexto, un_patron, &bloque)
@@ -69,5 +69,11 @@ module Matches
     pattern = Pattern.new(an_object)
     pattern.instance_exec &block
     pattern.get_value
+  end
+end
+
+class MatchError < StandardError
+  def initialize(msg= "")
+    super
   end
 end

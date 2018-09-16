@@ -5,7 +5,7 @@ require_relative 'lib/pattern'
 
 x = 1
 matches? x do
-  with(type(String)) {puts "Soy un String"}
+  with(type(String).or(duck(:+))) {puts "Soy un String"}
   with(val(1), type(Integer)) {puts self}
   otherwise {puts "hola"}
 end
@@ -14,7 +14,8 @@ string = 'Saludos desde'
 
 matches? string do
   with(duck(:select)){puts "bleh"}
-  with(type(String), :a_string) {puts "#{a_string} Peter Machine for Ruby"}
+  with(type(String), :a_string) {"#{a_string} Peter Machine for Ruby"}
+  otherwise {puts "No Deberia llegar aca"}
 end
 
 p (matches? x do
@@ -33,7 +34,7 @@ end
 
 matches? arr do
   with(list([:a, :b, :c])) do
-    puts (a + b + c)
+    a + b + c
   end
 end
 
