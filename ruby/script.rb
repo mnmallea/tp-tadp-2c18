@@ -13,21 +13,21 @@ end
 string = 'Saludos desde'
 
 matches? string do
-  with(duck(:select)){puts "bleh"}
+  with(duck(:select)) {puts "bleh"}
   with(type(String), :a_string) {"#{a_string} Peter Machine for Ruby"}
   otherwise {puts "No Deberia llegar aca"}
 end
 
 p (matches? x do
-  with(duck(:+,:*), :numero) do
-    numero+1
+  with(duck(:+, :*), :numero) do
+    numero + 1
   end
 end)
 
 arr = [1, 2, 3, 4, 5, 6]
 
 matches? arr do
-  with(list([1,2,3])) do
+  with(list([1, 2, 3])) do
     puts 'divine'
   end
 end

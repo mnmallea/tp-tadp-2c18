@@ -63,7 +63,6 @@ describe 'Tests para matches' do
   end
 
   it 'deberia bindear variables en listas' do
-
     arr = [1, 2, 3, 4, 5, 6]
 
     res = matches? arr do
@@ -73,5 +72,16 @@ describe 'Tests para matches' do
 
     expect(res).to eq 6
   end
+
+  it 'deberia matchear en el primer with y devolver 3' do
+    x = [1, 2, 3]
+    resultado = matches?(x) do
+      with(list([:a, val(2), duck(:+)])) {a + 2}
+      with(list([1, 2, 3])) {'acá no llego'}
+      otherwise {'acá no llego v2'}
+    end
+    expect(resultado).to eq 3
+  end
+
 
 end
