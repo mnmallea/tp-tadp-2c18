@@ -9,8 +9,8 @@ class Pattern
   def with(un_matcher, *otros_matchers, &bloque)
     matchers = otros_matchers << un_matcher
 
-    if self.todos_matchean matchers
-      contexto = self.configurar_contexto matchers
+    if todos_matchean(matchers)
+      contexto = configurar_contexto(matchers)
       match_status.ejecutar_bloque(contexto, self, &bloque)
     end
   end
@@ -21,7 +21,7 @@ class Pattern
 
 
   def todos_matchean(unos_matchers)
-    unos_matchers.all? {|matcher| matcher.call @objeto}
+    unos_matchers.all? {|matcher| matcher.call(@objeto)}
   end
 
   def configurar_contexto(matchers)
@@ -41,14 +41,14 @@ class NoMatch
   end
 
   def ejecutar_bloque(un_contexto, un_patron, &bloque)
-    resultado = un_contexto.instance_exec &bloque
-    matchear resultado, un_patron
+    resultado = un_contexto.instance_exec(&bloque)
+    matchear(resultado, un_patron)
   end
 
   private
 
   def matchear(un_valor, un_patron)
-    un_patron.match_status = Match.new un_valor
+    un_patron.match_status = Match.new(un_valor)
   end
 end
 

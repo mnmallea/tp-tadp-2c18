@@ -51,10 +51,14 @@ describe 'Tests para matchers' do
   end
 
   it 'debe matchear si la lista empieza igual' do
-    expect(list([1,2,3]).call(an_array)).to be true
+    expect(list([1,2,3], false).call(an_array)).to be true
   end
 
   it 'no debe matchear si no es una lista' do
     expect(list([1,2,3]).call('holis')).to be false
+  end
+
+  it 'debe matchear con lista de simbolos' do
+    expect(list([:a,:b,:c], false).call(an_array)).to be true
   end
 end

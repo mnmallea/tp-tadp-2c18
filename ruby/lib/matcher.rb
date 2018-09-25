@@ -22,7 +22,7 @@ module MatcherFactory
     TypeMatcher.new un_tipo
   end
 
-  def list(lista, matchear_tamanio = false)
+  def list(lista, matchear_tamanio = true)
     ListMatcher.new lista, matchear_tamanio
   end
 
@@ -32,7 +32,7 @@ module MatcherFactory
   end
 
   def call(un_objeto)
-    val(self).call(un_objeto)
+    val(self).call(un_objeto)     # <-- Era un requerimiento?
   end
 
   def bind_to(un_contexto, un_objeto)
@@ -88,18 +88,14 @@ class DuckMatcher < Matcher
   end
 
   def call(un_objeto)
-    mensajes_objeto = un_objeto.methods
-    @mensajes.all? do
-    |mensaje|
-      mensajes_objeto.include? mensaje
-    end
+    @mensajes.all? {|mensaje| un_objeto.methods.include?(mensaje)}
   end
 end
 
 class ListMatcher
   include OperacionesMatchers
 
-  def initialize(list, matchea_tamanio)
+  def initialize(list, matchea_tamanio = true)
     @list = list
     @debe_matchear_tamanio = matchea_tamanio
   end
@@ -109,10 +105,7 @@ class ListMatcher
   end
 
   def matchea_con_lista(una_lista)
-    @list.zip(una_lista).reduce(true) do
-    |un_bool, arr|
-      arr[0].call(arr[1]) && un_bool
-    end
+    @list.zip(una_lista).all? {|matcher, valor| matcher.call(valor)}
   end
 
   def matchea_tamanio(una_lista)

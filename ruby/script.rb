@@ -11,10 +11,9 @@ matches? x do
 end
 
 string = 'Saludos desde'
-
 matches? string do
   with(duck(:select)) {puts "bleh"}
-  with(type(String), :a_string) {"#{a_string} Peter Machine for Ruby"}
+  with(type(String), :a_string) {puts "#{a_string} Peter Machine for Ruby"}
   otherwise {puts "No Deberia llegar aca"}
 end
 
@@ -27,22 +26,23 @@ end)
 arr = [1, 2, 3, 4, 5, 6]
 
 matches? arr do
-  with(list([1, 2, 3])) do
+  with(list([1, 2, 3], false)) do
     puts 'divine'
   end
 end
 
 matches? arr do
-  with(list([:a, :b, :c])) do
-    a + b + c
+  with(list([:a, :b, :c], false)) do
+    puts a + b + c
   end
 end
 
-# matches? arr do
-#   with(list([type(String)]))do
-#     'acá no debería entrar'
-#   end
-#   with(list([:a, :b, :c], true)) do
-#     puts (a + b + c)
-#   end
-# end
+matches? arr do
+  with(list([type(String)]))do
+    'acá no debería entrar'
+  end
+  with(list([:a, :b, :c], true)) do
+    puts (a + b + c)
+  end
+  otherwise {p 'Deberia entrar aca'}
+end
