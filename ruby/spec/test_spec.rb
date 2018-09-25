@@ -1,6 +1,6 @@
-describe Object do
 
   describe 'Tests 1era parte' do
+    include MatcherFactory
     it 'paso test de variable' do
       expect(:a_variable_name.call('anything')).to be true
     end
@@ -62,6 +62,7 @@ describe Object do
   end
 
   describe 'Tests 2da parte' do
+    include MatcherFactory
     it 'paso tests de and' do
       expect(duck(:+).and(type(Fixnum), val(5)).call(5)).to be true
       expect(duck(:hola).and(type(Fixnum), val(5)).call(5)).to be false
@@ -92,5 +93,3 @@ describe Object do
     end
   end
 
-
-end

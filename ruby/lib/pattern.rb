@@ -1,4 +1,7 @@
+require_relative 'matcher'
+
 class Pattern
+  include MatcherFactory
   attr_accessor :match_status
 
   def initialize(un_objeto)
