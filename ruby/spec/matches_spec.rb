@@ -62,11 +62,22 @@ describe 'Tests para matches' do
     expect(res).to eq('Hola desde Peter Machine for Ruby')
   end
 
-  it 'deberia bindear variables en listas' do
+  it 'no deberia matchear en el primer with y debe devolver false' do
     arr = [1, 2, 3, 4, 5, 6]
 
     res = matches? arr do
       with(list([:a, :b, :c])) {a + b + c}
+      otherwise {false}
+    end
+
+    expect(res).to eq false
+  end
+
+  it 'deberia bindear variables en listas' do
+    arr = [1, 2, 3, 4, 5, 6]
+
+    res = matches? arr do
+      with(list([:a, :b, :c], false)) {a + b + c}
       otherwise {false}
     end
 
