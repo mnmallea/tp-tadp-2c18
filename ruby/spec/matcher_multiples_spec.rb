@@ -1,4 +1,5 @@
 describe 'Tests para matchers multiples' do
+  include MatcherFactory
   it 'matchea por tipo y valor' do
     resultado = duck(:+).and(type(Fixnum), val(5)).call(5)
     expect(resultado).to be true

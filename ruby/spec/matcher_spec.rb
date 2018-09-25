@@ -1,4 +1,5 @@
 describe 'Tests para matchers' do
+  include MatcherFactory
 
   let :patito do
     pato = Object.new

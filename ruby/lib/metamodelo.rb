@@ -4,7 +4,7 @@ require_relative 'contexto'
 
 class Object
   include Matches
-  include MatcherFactory
+  include DefaultMatcher
 end
 
 class Symbol

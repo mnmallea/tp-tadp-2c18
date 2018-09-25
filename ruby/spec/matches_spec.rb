@@ -94,5 +94,28 @@ describe 'Tests para matches' do
     expect(resultado).to eq 3
   end
 
+end
 
+describe 'matches con matcher multiples' do
+  it 'deberia funcionar matches con matchers multiples' do
+    x = [1, 2, 3]
+
+    res = matches? x do
+      with(list([duck(:+), duck(:+), duck(:+)]).and(:lista)) {lista.reduce(:+)}
+      otherwise {raise 'Esto no deberia pasar'}
+    end
+
+    expect(res).to eq 6
+  end
+
+  it 'deberia funcionar matches con matchers multiples' do
+    x = []
+
+    res = matches? x do
+      with(list([duck(:+), duck(:+), duck(:+)]).and(:lista).or(val([]))) {(lista << 0).reduce(:+)}
+      otherwise {raise 'Esto no deberia pasar'}
+    end
+
+    expect(res).to eq 0
+  end
 end

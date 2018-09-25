@@ -30,9 +30,11 @@ module MatcherFactory
     mensajes = unos_mensajes << un_mensaje
     DuckMatcher.new mensajes
   end
+end
 
+module DefaultMatcher
   def call(un_objeto)
-    val(self).call(un_objeto)     # <-- Era un requerimiento?
+    un_objeto == self
   end
 
   def bind_to(un_contexto, un_objeto)
@@ -40,16 +42,14 @@ module MatcherFactory
   end
 end
 
-class Matcher
+module Matcher
+  include MatcherFactory
   include OperacionesMatchers
-
-  def bind_to(un_contexto, un_objeto)
-
-  end
-
+  include DefaultMatcher
 end
 
-class NotMatcher < Matcher
+class NotMatcher
+  include Matcher
   def initialize(un_matcher)
     @matcher = un_matcher
   end
@@ -59,7 +59,8 @@ class NotMatcher < Matcher
   end
 end
 
-class TypeMatcher < Matcher
+class TypeMatcher
+  include Matcher
 
   def initialize(un_tipo)
     @tipo = un_tipo
@@ -71,7 +72,8 @@ class TypeMatcher < Matcher
 
 end
 
-class ValMatcher < Matcher
+class ValMatcher
+  include Matcher
 
   def initialize(un_objeto)
     @objeto = un_objeto
@@ -82,7 +84,9 @@ class ValMatcher < Matcher
   end
 end
 
-class DuckMatcher < Matcher
+class DuckMatcher
+  include Matcher
+
   def initialize(unos_mensajes)
     @mensajes = unos_mensajes
   end
@@ -93,7 +97,7 @@ class DuckMatcher < Matcher
 end
 
 class ListMatcher
-  include OperacionesMatchers
+  include Matcher
 
   def initialize(list, matchea_tamanio = true)
     @list = list
@@ -117,27 +121,31 @@ class ListMatcher
   end
 end
 
-
-class AllMatcher
-  include OperacionesMatchers
-
+class MatcherMultiple
+  include Matcher
   def initialize(unos_matchers)
     @matchers = unos_matchers
   end
+
+  def bind_to(un_contexto, un_objeto)
+    @matchers.each {|matcher| matcher.bind_to(un_contexto, un_objeto)}
+  end
+
+end
+
+
+class AllMatcher < MatcherMultiple
 
   def call(un_objeto)
     @matchers.all? {|matcher| matcher.call(un_objeto)}
   end
+
 end
 
-class AnyMatcher
-  include OperacionesMatchers
-
-  def initialize(unos_matchers)
-    @matchers = unos_matchers
-  end
+class AnyMatcher < MatcherMultiple
 
   def call(un_objeto)
     @matchers.any? {|matcher| matcher.call(un_objeto)}
   end
+
 end
