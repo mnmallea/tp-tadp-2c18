@@ -4,10 +4,10 @@ require_relative 'contexto'
 
 class Object
   include Matches
-  include DefaultMatcher
 end
 
 class Symbol
+  include Matcher
   def call(un_objeto)
     true
   end

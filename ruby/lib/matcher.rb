@@ -32,20 +32,9 @@ module MatcherFactory
   end
 end
 
-module DefaultMatcher
-  def call(un_objeto)
-    un_objeto == self
-  end
-
-  def bind_to(un_contexto, un_objeto)
-
-  end
-end
-
 module Matcher
   include MatcherFactory
   include OperacionesMatchers
-  include DefaultMatcher
 end
 
 class NotMatcher
@@ -109,7 +98,21 @@ class ListMatcher
   end
 
   def matchea_con_lista(una_lista)
-    @list.zip(una_lista).all? {|matcher, valor| matcher.call(valor)}
+    @list.zip(una_lista).all? do |matcher, valor|
+      if type(Matcher).call(matcher)    ##### ACA PODRIA PREGUNTAR POR TYPE SYMBOL EN VEZ DE INCLUIRLE MATCHER A LA CLASE SYMBOL --> DISCUTIRLO
+        matcher.call(valor)
+      else
+        val(matcher).call(valor)
+      end
+    end
+
+    def configurar_contexto(un_contexto, un_objeto)   ## SE UTILIZA EN EL PATTERN PARA CUANDO LE LLEGA EN EL WITH UN LISTMATCHER, VERIFICA SI HAY SIMBOLOS Y BINDEA
+      @list.each_with_index do |objeto, i|
+        if type(Symbol).call(objeto)
+          objeto.bind_to(un_contexto, un_objeto[i])
+        end
+      end
+    end
   end
 
   def matchea_tamanio(una_lista)

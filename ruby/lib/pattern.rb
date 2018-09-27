@@ -22,14 +22,20 @@ class Pattern
     match_status.ejecutar_bloque(Contexto.new, self, &bloque)
   end
 
-
   def todos_matchean(unos_matchers)
     unos_matchers.all? {|matcher| matcher.call(@objeto)}
   end
 
   def configurar_contexto(matchers)
     contexto = Contexto.new
-    matchers.each {|matcher| matcher.bind_to contexto, @objeto}
+    matchers.each do |matcher|
+      if type(Symbol).call(matcher)   ## ACA ES CUANDO ENTRA EL SIMBOLO CRUDO AL WITH, FALTA CUANDO ENTRA EL LISTMATCHER CON SIMBOLOS...
+        matcher.bind_to(contexto, @objeto)
+      else if type(ListMatcher).call(matcher)
+             matcher.configurar_contexto(contexto, @objeto)
+           end
+      end
+    end
     contexto
   end
 
