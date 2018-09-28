@@ -1,4 +1,4 @@
-require_relative 'lib/matcher'
+require_relative 'lib/ib/matcher'
 require_relative 'lib/metamodelo'
 require_relative 'lib/pattern'
 
