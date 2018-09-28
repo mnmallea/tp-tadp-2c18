@@ -35,10 +35,15 @@ end
 module Matcher
   include MatcherFactory
   include OperacionesMatchers
+
+  def bind_to(un_contexto, un_objeto)
+
+  end
 end
 
 class NotMatcher
   include Matcher
+
   def initialize(un_matcher)
     @matcher = un_matcher
   end
@@ -89,7 +94,13 @@ class ListMatcher
   include Matcher
 
   def initialize(list, matchea_tamanio = true)
-    @list = list
+    @list = list.map do
+    |elemento|
+      matches? elemento do
+        with(type(Matcher)) {elemento}
+        otherwise {val elemento}
+      end
+    end
     @debe_matchear_tamanio = matchea_tamanio
   end
 
@@ -99,19 +110,13 @@ class ListMatcher
 
   def matchea_con_lista(una_lista)
     @list.zip(una_lista).all? do |matcher, valor|
-      if type(Matcher).call(matcher)    ##### ACA PODRIA PREGUNTAR POR TYPE SYMBOL EN VEZ DE INCLUIRLE MATCHER A LA CLASE SYMBOL --> DISCUTIRLO
-        matcher.call(valor)
-      else
-        val(matcher).call(valor)
-      end
+      matcher.call valor
     end
+  end
 
-    def configurar_contexto(un_contexto, un_objeto)   ## SE UTILIZA EN EL PATTERN PARA CUANDO LE LLEGA EN EL WITH UN LISTMATCHER, VERIFICA SI HAY SIMBOLOS Y BINDEA
-      @list.each_with_index do |objeto, i|
-        if type(Symbol).call(objeto)
-          objeto.bind_to(un_contexto, un_objeto[i])
-        end
-      end
+  def bind_to(un_contexto, un_objeto) ## SE UTILIZA EN EL PATTERN PARA CUANDO LE LLEGA EN EL WITH UN LISTMATCHER, VERIFICA SI HAY SIMBOLOS Y BINDEA
+    @list.each_with_index do |objeto, i|
+      objeto.bind_to(un_contexto, un_objeto[i])
     end
   end
 
@@ -119,13 +124,11 @@ class ListMatcher
     (!@debe_matchear_tamanio && una_lista.size >= @list.size) || una_lista.size == @list.size
   end
 
-  def bind_to(un_contexto, una_lista)
-    @list.zip(una_lista).each {|matcher, elemento_lista| matcher.bind_to un_contexto, elemento_lista}
-  end
 end
 
 class MatcherMultiple
   include Matcher
+
   def initialize(unos_matchers)
     @matchers = unos_matchers
   end

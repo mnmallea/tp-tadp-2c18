@@ -5,7 +5,7 @@ describe 'Tests para matches' do
 
   it 'deberia matchear en el primer with y devolver 3' do
     expect(matches?(x) do
-      with(list([:a, val(2), duck(:+)])) {a + 2}
+      with(list([:a, 2, duck(:+)])) {a + 2}
       with(list([1, 2, 3])) {'acá no llego'}
       otherwise {'acá no llego'}
     end).to eq(3)

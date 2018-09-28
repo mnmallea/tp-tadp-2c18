@@ -4,7 +4,8 @@ class Pattern
   include MatcherFactory
   attr_accessor :match_status
 
-  def initialize(un_objeto)
+  def initialize(un_objeto, objeto_orginal)
+    @objeto_orginal = objeto_orginal
     @objeto = un_objeto
     self.match_status = NoMatch.new
   end
@@ -19,7 +20,7 @@ class Pattern
   end
 
   def otherwise(&bloque)
-    match_status.ejecutar_bloque(Contexto.new, self, &bloque)
+    match_status.ejecutar_bloque(Contexto.new(@objeto_orginal), self, &bloque)
   end
 
   def todos_matchean(unos_matchers)
@@ -27,14 +28,9 @@ class Pattern
   end
 
   def configurar_contexto(matchers)
-    contexto = Contexto.new
+    contexto = Contexto.new @objeto_orginal
     matchers.each do |matcher|
-      if type(Symbol).call(matcher)   ## ACA ES CUANDO ENTRA EL SIMBOLO CRUDO AL WITH, FALTA CUANDO ENTRA EL LISTMATCHER CON SIMBOLOS...
-        matcher.bind_to(contexto, @objeto)
-      else if type(ListMatcher).call(matcher)
-             matcher.configurar_contexto(contexto, @objeto)
-           end
-      end
+      matcher.bind_to(contexto, @objeto)
     end
     contexto
   end
@@ -75,14 +71,14 @@ end
 
 module Matches
   def matches?(an_object, &block)
-    pattern = Pattern.new(an_object)
+    pattern = Pattern.new(an_object, self)
     pattern.instance_exec &block
     pattern.get_value
   end
 end
 
 class MatchError < StandardError
-  def initialize(msg= "")
+  def initialize(msg = "")
     super
   end
 end
