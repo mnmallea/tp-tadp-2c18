@@ -7,7 +7,6 @@ class Object
 end
 
 class Symbol
-  include Matcher
   def call(un_objeto)
     true
   end

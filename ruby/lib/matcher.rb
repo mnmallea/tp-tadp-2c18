@@ -94,10 +94,10 @@ class ListMatcher
   include Matcher
 
   def initialize(list, matchea_tamanio = true)
-    @list = list.map do
+    @matchers = list.map do
     |elemento|
       matches? elemento do
-        with(type(Matcher)) {elemento}
+        with(type(Matcher).or(type(Symbol))) {elemento}
         otherwise {val elemento}
       end
     end
@@ -109,19 +109,19 @@ class ListMatcher
   end
 
   def matchea_con_lista(una_lista)
-    @list.zip(una_lista).all? do |matcher, valor|
+    @matchers.zip(una_lista).all? do |matcher, valor|
       matcher.call valor
     end
   end
 
-  def bind_to(un_contexto, un_objeto) ## SE UTILIZA EN EL PATTERN PARA CUANDO LE LLEGA EN EL WITH UN LISTMATCHER, VERIFICA SI HAY SIMBOLOS Y BINDEA
-    @list.each_with_index do |objeto, i|
-      objeto.bind_to(un_contexto, un_objeto[i])
+  def bind_to(un_contexto, lista_valores) ## SE UTILIZA EN EL PATTERN PARA CUANDO LE LLEGA EN EL WITH UN LISTMATCHER, VERIFICA SI HAY SIMBOLOS Y BINDEA
+    @matchers.zip(lista_valores).each  do |matcher, valor|
+      matcher.bind_to(un_contexto, valor)
     end
   end
 
   def matchea_tamanio(una_lista)
-    (!@debe_matchear_tamanio && una_lista.size >= @list.size) || una_lista.size == @list.size
+    @debe_matchear_tamanio ? @matchers.size == una_lista.size : una_lista.size >= @matchers.size
   end
 
 end
