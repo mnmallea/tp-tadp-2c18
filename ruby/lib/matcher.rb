@@ -37,7 +37,7 @@ module Matcher
   include OperacionesMatchers
 
   def bind_to(un_contexto, un_objeto)
-
+    #No hace nada por defecto. Para que sobreescriban las subclases
   end
 end
 
