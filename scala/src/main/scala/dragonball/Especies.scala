@@ -7,6 +7,8 @@ package object Especies{
 
   case class Normal() extends EstadoSayajin
 
+  case class MonoGigante() extends EstadoSayajin
+
   case class Humano() extends Especie
 
   case class Saiyajin(estado: EstadoSayajin) extends Especie // tiene cola y estado supersayayin

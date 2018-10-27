@@ -1,4 +1,5 @@
 import Especies.Especie
+import Items.Item
 import Movimientos.Movimiento
 
 package object Guerreros {
@@ -7,10 +8,12 @@ package object Guerreros {
 
   type PlanDeAtaque = List[Movimiento]
 
-  type Item
+  case class Guerrero(nombre: String, inventario: List[Item], energia: Int, maximoPotencial: Int, especie: Especie, estado: EstadoGuerrero) {
+    def tieneItem(item: Item): Boolean = inventario.contains(item)
 
-  case class Guerrero(nombre: Int, inventario: List[Item], energia: Int, especie: Especie) {
     def aumentarEnergia(cantidad: Int) = this.copy(energia = energia + cantidad)
+
+    def recuperarPotencial: Guerrero = copy(energia = maximoPotencial)
 
     def movimientoMasEfectivoContra(otroGuerrero: Guerrero)(criterio: Criterio): Option[Movimiento] = ???
 
@@ -20,6 +23,12 @@ package object Guerreros {
 
     def pelearContra(oponente: Guerrero)(planDeAtaque: PlanDeAtaque): Any = ???
   }
+
+  trait EstadoGuerrero
+
+  object Vivo extends EstadoGuerrero
+  object Inconsciente extends EstadoGuerrero
+  object Mueto extends EstadoGuerrero
 
 
 }
