@@ -9,6 +9,11 @@ class ProjectSpec extends FreeSpec with Matchers {
         Prueba.materia shouldBe "tadp"
       }
     }
+
+    "true should be true" in {
+      val n = 1 > 5
+      n shouldBe true
+    }
   }
 
 }
