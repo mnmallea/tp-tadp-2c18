@@ -1,6 +1,7 @@
 package dragonball
 
 case class Guerrero(nombre: String, inventario: List[Item], energia: Int, maximoPotencial: Int, especie: Especie, estado: EstadoGuerrero) {
+  //lista de movimientos?
   def tieneItem(item: Item): Boolean = inventario.contains(item)
 
   def aumentarEnergia(cantidad: Int) = this.copy(energia = energia + cantidad)
@@ -21,3 +22,4 @@ trait EstadoGuerrero
 object Vivo extends EstadoGuerrero
 object Inconsciente extends EstadoGuerrero
 object Mueto extends EstadoGuerrero
+

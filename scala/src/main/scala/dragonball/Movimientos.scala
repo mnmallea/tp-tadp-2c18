@@ -38,4 +38,32 @@ object Movimientos {
     }
   }
 
+  //solo los monstruos
+  object ComerAlOponente extends Movimiento {
+    def apply(pareja: Pareja): Pareja =  ???
+  }
+    
+  //solo saiyajin
+  object ConvertirseEnMono extends Movimiento { 
+    def apply(pareja: Pareja): Pareja =  ???
+  } 
+   
+  //solo saiyajin
+  object ConvertirseEnSuperSaiyajin extends Movimiento {
+    def apply(pareja: Pareja): Pareja =  ???
+  } 
+   
+  //humano, saiyajin o namekusei
+  object Fusion extends Movimiento {
+    def apply(pareja: Pareja): Pareja =  ???
+  } 
+    
+  //Namekuseins, monstruos y guerreros que tengan 7 esferas del dragon en su inventario
+  object Magia extends Movimiento {
+    def apply(pareja: Pareja): Pareja =  ???
+  } 
+   
+  object Ataques extends Movimiento {
+    def apply(pareja: Pareja): Pareja =  ???
+  }
 }
