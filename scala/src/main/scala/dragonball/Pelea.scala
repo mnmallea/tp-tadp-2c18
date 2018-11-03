@@ -1,7 +1,5 @@
 package dragonball
 
-import Guerreros.Guerrero
-
 sealed trait Pelea
 
 case class Ganador(guerrero: Guerrero)

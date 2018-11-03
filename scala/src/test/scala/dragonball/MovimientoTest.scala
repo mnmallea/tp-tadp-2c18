@@ -1,7 +1,5 @@
 package dragonball
 
-import Especies._
-import Guerreros._
 import Movimientos._
 import Items._
 import org.scalatest.{FreeSpec, Matchers}

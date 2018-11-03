@@ -1,20 +1,17 @@
-import Especies._
-import Guerreros._
-import Items.Item
+package dragonball
 
-package object Movimientos {
-
-  case class Pareja(atacante: Guerrero, atacado: Guerrero) {
-    def mapAtacante(f: Guerrero => Guerrero): Pareja = {
-      Pareja(f(atacante), atacado)
-    }
-
-    def mapAtacado(f: Guerrero => Guerrero): Pareja = {
-      Pareja(atacante, f(atacado))
-    }
+case class Pareja(atacante: Guerrero, atacado: Guerrero) {
+  def mapAtacante(f: Guerrero => Guerrero): Pareja = {
+    Pareja(f(atacante), atacado)
   }
 
-  type Movimiento = Pareja => Pareja
+  def mapAtacado(f: Guerrero => Guerrero): Pareja = {
+    Pareja(atacante, f(atacado))
+  }
+}
+
+
+object Movimientos {
 
   object DejarseFajar extends Movimiento {
     def apply(pareja: Pareja): Pareja = pareja
@@ -22,7 +19,7 @@ package object Movimientos {
 
   object CargarKi extends Movimiento {
     def apply(pareja: Pareja): Pareja = {
-      pareja.mapAtacante( atacante => atacante.especie match {
+      pareja.mapAtacante(atacante => atacante.especie match {
         case Androide() => atacante
         case Saiyajin(Super(nivel)) => atacante.aumentarEnergia(150 * nivel)
         case _ => atacante.aumentarEnergia(100)
