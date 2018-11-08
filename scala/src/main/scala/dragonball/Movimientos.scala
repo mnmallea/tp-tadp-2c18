@@ -22,8 +22,8 @@ object Movimientos {
   case object CargarKi extends Movimiento {
     def apply(pareja: Pareja): Pareja = {
       pareja.mapAtacante(atacante => atacante.especie match {
-        case Androide() => atacante
-        case Saiyajin(Super(nivel), _) => atacante.aumentarEnergia(150 * nivel)
+        case Androide(_) => atacante
+        case Saiyajin(Super(nivel), _, _) => atacante.aumentarEnergia(150 * nivel)
         case _ => atacante.aumentarEnergia(100)
       }
       )
@@ -51,10 +51,9 @@ object Movimientos {
 
   case object ConvertirseEnMono extends Movimiento {
     def apply(pareja: Pareja): Pareja = {
-      pareja.mapAtacante(atacante => atacante.especie match  {
-        case especie: Saiyajin => if(especie.tieneCola && atacante.tieneItem(FotoDeLuna))
-                                        atacante.copy(especie = especie.convertirseEn(MonoGigante()))
-                                  else atacante
+      pareja.mapAtacante(atacante => atacante.especie match {
+        case especie: Saiyajin if especie.tieneCola && atacante.tieneItem(FotoDeLuna) =>
+          atacante.copy(especie = especie.convertirseEnMono())
         case _ => atacante
       })
     }
@@ -63,16 +62,15 @@ object Movimientos {
   case object ConvertirseEnSS extends Movimiento {
     def apply(pareja: Pareja): Pareja = {
       pareja.mapAtacante(atacante => atacante.especie match {
-        case especie: Saiyajin => if(atacante.energia >= atacante.maximoPotencial/2)
-                                        atacante.copy(especie = especie.convertirseEn(Super())).copy(maximoPotencial = atacante.maximoPotencial*5)
-                                  else atacante
+        case especie: Saiyajin if atacante.energia >= atacante.maximoPotencial / 2 =>
+          atacante.copy(especie = especie.convertirseEnSS())
         case _ => atacante
       })
     }
   }
 
-  case class Fusion(guerrero: Guerrero){
-    
+  case class Fusion(guerrero: Guerrero) {
+
   }
 
 }
