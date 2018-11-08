@@ -10,6 +10,8 @@ case class Pareja(atacante: Guerrero, atacado: Guerrero) {
   def mapAtacado(f: Guerrero => Guerrero): Pareja = {
     Pareja(atacante, f(atacado))
   }
+
+  def mapEspecies(): (Especie, Especie) = (this.atacante.especie, this.atacado.especie)
 }
 
 
@@ -72,5 +74,4 @@ object Movimientos {
   case class Fusion(guerrero: Guerrero) {
 
   }
-
 }

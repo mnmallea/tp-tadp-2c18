@@ -1,6 +1,8 @@
 package dragonball
 
-sealed trait Especie
+sealed trait Especie {
+  def energia: Energia
+}
 
 sealed trait EstadoSayajin {
   def convertimeEnSS(saiyajin: Saiyajin): Saiyajin
@@ -39,7 +41,6 @@ case class Saiyajin(estado: EstadoSayajin, tieneCola: Boolean = true, energia: E
 
 case class Humano(energia: Energia) extends Especie
 
-
 case class Namekusein(energia: Energia) extends Especie //poderes curativos
 
 case class Monstruo(formaDeDigerir: FormaDeDigerir, energia: Energia) extends Especie //se comen a sus oponenentes
@@ -56,6 +57,8 @@ case class Androide(energia: Energia) extends Especie // no tienen ki, no necesi
 
 case class Energia(actual: Int, maxima: Int) {
   def aumentar(aumento: Int): Energia = copy(actual = (actual + aumento).min(maxima))
+
+  def disminuir(disminucion: Int): Energia = copy(actual = (actual - disminucion).max(0))
 
   def cargarAlMaximo: Energia = copy(actual = maxima)
 
