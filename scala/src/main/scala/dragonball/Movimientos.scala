@@ -71,7 +71,26 @@ object Movimientos {
     }
   }
 
-  case class Fusion(guerrero: Guerrero) {
+  case class Fusion(guerrero: Guerrero) extends Movimiento {
 
+  }
+
+  case object GolpesNinja extends Movimiento {
+    def apply(pareja: Pareja): Pareja = {
+      pareja.mapEspecies() match {
+        case (Humano(_), Androide(_)) => ???
+        case _ => ???
+      }
+    }
+  }
+
+  case object Explotar extends Movimiento {
+    def apply(pareja: Pareja): Pareja = {
+      pareja.mapEspecies() match {
+        case (Monstruo(_, _), _) | (Androide(_), _) => ???
+        case (Monstruo(_, _), Namekusein(_)) |  (Androide(_), Namekusein(_)) => ???
+        case _ => pareja
+      }
+    }
   }
 }
