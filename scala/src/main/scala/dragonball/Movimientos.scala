@@ -1,5 +1,7 @@
 package dragonball
 
+import dragonball.Items.FotoDeLuna
+
 case class Pareja(atacante: Guerrero, atacado: Guerrero) {
   def mapAtacante(f: Guerrero => Guerrero): Pareja = {
     Pareja(f(atacante), atacado)
@@ -13,15 +15,15 @@ case class Pareja(atacante: Guerrero, atacado: Guerrero) {
 
 object Movimientos {
 
-  object DejarseFajar extends Movimiento {
+  case object DejarseFajar extends Movimiento {
     def apply(pareja: Pareja): Pareja = pareja
   }
 
-  object CargarKi extends Movimiento {
+  case object CargarKi extends Movimiento {
     def apply(pareja: Pareja): Pareja = {
       pareja.mapAtacante(atacante => atacante.especie match {
         case Androide() => atacante
-        case Saiyajin(Super(nivel)) => atacante.aumentarEnergia(150 * nivel)
+        case Saiyajin(Super(nivel), _) => atacante.aumentarEnergia(150 * nivel)
         case _ => atacante.aumentarEnergia(100)
       }
       )
@@ -36,6 +38,41 @@ object Movimientos {
         pareja
       }
     }
+  }
+
+  case object ComerseOponente extends Movimiento {
+    def apply(pareja: Pareja): Pareja = {
+      pareja.mapAtacante(atacante => atacante.especie match {
+        case especie: Monstruo => especie.formaDeDigerir(pareja.atacante, pareja.atacado)
+        case _ => atacante
+      })
+    }
+  }
+
+  case object ConvertirseEnMono extends Movimiento {
+    def apply(pareja: Pareja): Pareja = {
+      pareja.mapAtacante(atacante => atacante.especie match  {
+        case especie: Saiyajin => if(especie.tieneCola && atacante.tieneItem(FotoDeLuna))
+                                        atacante.copy(especie = especie.convertirseEn(MonoGigante()))
+                                  else atacante
+        case _ => atacante
+      })
+    }
+  }
+
+  case object ConvertirseEnSS extends Movimiento {
+    def apply(pareja: Pareja): Pareja = {
+      pareja.mapAtacante(atacante => atacante.especie match {
+        case especie: Saiyajin => if(atacante.energia >= atacante.maximoPotencial/2)
+                                        atacante.copy(especie = especie.convertirseEn(Super())).copy(maximoPotencial = atacante.maximoPotencial*5)
+                                  else atacante
+        case _ => atacante
+      })
+    }
+  }
+
+  case class Fusion(guerrero: Guerrero){
+    
   }
 
 }

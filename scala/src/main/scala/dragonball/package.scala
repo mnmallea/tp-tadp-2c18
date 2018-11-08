@@ -3,6 +3,6 @@ package object dragonball {
   type PlanDeAtaque = List[Movimiento]
   type Movimiento = Pareja => Pareja
   type Item = Movimiento
-
+  type FormaDeDigerir = (Guerrero, Guerrero) => Guerrero
 
 }

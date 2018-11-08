@@ -17,4 +17,8 @@ object Items {
     }
   }
 
+
+  case object FotoDeLuna extends Item {
+    def apply(pareja: Pareja): Pareja = pareja
+  }
 }
