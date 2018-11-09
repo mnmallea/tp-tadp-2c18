@@ -1,14 +1,15 @@
 package dragonball
 
-import Movimientos._
-import Items._
+import dragonball.Items._
+import dragonball.Movimientos._
 import org.scalatest.{FreeSpec, Matchers}
 
 class MovimientoTest extends FreeSpec with Matchers {
 
   "Test de movimientos" - {
-    val androide = Guerrero("androide1785", List(), Energia(100,200), Androide(), Vivo, Set())
-    val humano = Guerrero("iron man", List(), Energia(100,200), Humano(), Vivo, Set())
+    val androide = Guerrero("androide1785", List(), Energia(100, 200), Androide(), Vivo, Set())
+    val humano = Guerrero("iron man", List(), Energia(100, 200), Humano(), Vivo, Set())
+    val namekusein = Guerrero("name", List(), Energia(100, 300), Namekusein(), Vivo, Set())
 
     "el androide se deja fajar por el humano y todo debería quedar igual" in {
       val resultado = DejarseFajar(Pareja(androide, humano))
@@ -35,6 +36,67 @@ class MovimientoTest extends FreeSpec with Matchers {
     "el humano es atacado con un ArmaRoma y deberia quedar inconsciente" in {
       val resultado = UsarItem(ArmaRoma)(Pareja(androide.copy(inventario = List(ArmaRoma)), humano))
       resultado.atacado.estado shouldBe Inconsciente
+    }
+
+    "Fusiones" - {
+
+      "fusion humano- androide" - {
+        val humanoFusion = humano.copy(movimientos = Set(Fusion))
+        val namekuseinFusion = namekusein.copy(movimientos = Set(DejarseFajar, CargarKi))
+        val fusionado = Fusion(Pareja(humanoFusion, namekuseinFusion)).atacante
+        "el humano se fusiona con un namekusein" in {
+          fusionado.especie shouldBe Fusionado(humanoFusion.especie)
+        }
+
+        "energia de la fusion humano - namekusein" in {
+          fusionado.energia shouldBe Energia(200, 500)
+        }
+
+        "los movimientos del fusionado deben ser 3" in {
+          fusionado.movimientos.size shouldBe 3
+        }
+
+        "movimientos del fusionado" in {
+          fusionado.movimientos shouldBe Set(Fusion, DejarseFajar, CargarKi)
+        }
+
+      }
+
+      "el humano intenta fusionarse con el androide pero no pasa nada" in {
+        val fusionado = Fusion(Pareja(humano, androide)).atacante
+        fusionado shouldBe humano
+      }
+
+    }
+
+    "Sayajines" - {
+      def convertirASS(x: Guerrero) = ConvertirseEnSS(Pareja(x, humano)).atacante
+
+      def convertirAMono(x: Guerrero) = ConvertirseEnMono(Pareja(x, humano)).atacante
+
+      val saiyajin = Guerrero("julian ezequiel", List(), Energia(100, 100), Saiyajin(Normal), Vivo, Set())
+
+      "Conversión exitosa" - {
+        val nuevoGuerrero = convertirASS(saiyajin)
+        "se convierte y su nivel debe ser 1" in {
+          nuevoGuerrero.especie.asInstanceOf[Saiyajin].estado shouldBe Super(1)
+        }
+        "se convierte y su ki maximo pasa a ser el quintuple" in {
+          nuevoGuerrero.energia.maximo shouldBe saiyajin.energia.maximo * 5
+        }
+        "se convierte y su ki actual sigue siendo el mismo" in {
+          nuevoGuerrero.energia.actual shouldBe saiyajin.energia.actual
+        }
+      }
+
+      "si es un mono no puede convertirse en saiyayin" in {
+        convertirASS(saiyajin.copy(especie = Saiyajin(MonoGigante))).especie.asInstanceOf[Saiyajin].estado shouldBe MonoGigante
+      }
+
+      "si tiene el ki bajo no puede convertirse" in {
+        convertirASS(saiyajin.copy(energia = Energia(49, 100))).especie.asInstanceOf[Saiyajin].estado shouldBe Normal
+      }
+
     }
 
 

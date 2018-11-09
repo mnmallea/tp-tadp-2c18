@@ -10,13 +10,13 @@ case class Saiyajin(estado: EstadoSayajin, tieneCola: Boolean = true) extends Es
     case _ => copy(tieneCola = false)
   }
 
-  def setEstado(nuevoEstado: EstadoSayajin): Saiyajin = copy(estado = Normal)
+  def setEstado(nuevoEstado: EstadoSayajin): Saiyajin = copy(estado = nuevoEstado)
 
-  def aumentarNivelSaiyajin: Saiyajin = {
+  def proximoNivelSaiyayin: Int = {
     estado match {
       case MonoGigante => throw new SaiyajinException
-      case Super(nivel) => setEstado(Super(nivel + 1))
-      case _ => setEstado(Super(1))
+      case Super(nivel) => nivel + 1
+      case _ => 1
     }
   }
 
@@ -36,4 +36,6 @@ case class Androide() extends Especie with ConBateria
 
 // no tienen ki, no necesitan comer y no pueden quedar inconscientes
 
-case class Fusionado(especieOriginal: Especie)
+case class Fusionado(especieOriginal: Especie) extends Especie {
+  def tipoEnergia: TipoEnergia = especieOriginal.tipoEnergia
+}

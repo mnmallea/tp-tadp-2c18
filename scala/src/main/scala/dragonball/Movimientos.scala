@@ -11,7 +11,7 @@ case class Pareja(atacante: Guerrero, atacado: Guerrero) {
     Pareja(atacante, f(atacado))
   }
 
-  def mapEspecies(): (Especie, Especie) = (this.atacante.especie, this.atacado.especie)
+  lazy val especies: (Especie, Especie) = (this.atacante.especie, this.atacado.especie)
 }
 
 
@@ -64,9 +64,11 @@ object Movimientos {
   case object ConvertirseEnSS extends Movimiento {
     def apply(pareja: Pareja): Pareja = {
       pareja.mapAtacante(atacante => atacante.especie match {
-        case especie: Saiyajin if atacante.energia.actual >= atacante.energia.maximo / 2 =>
+        case saiyayin: Saiyajin if atacante.energia.actual >= atacante.energia.maximo / 2 =>
           try {
-            atacante.copy(especie = especie.aumentarNivelSaiyajin)
+            val nuevoNivel = saiyayin.proximoNivelSaiyayin
+            atacante.copy(especie = saiyayin setEstado Super(nuevoNivel),
+              energia = atacante.energia.modificarMaximo(_ * 5 * nuevoNivel))
           } catch {
             case _: SaiyajinException => atacante
           }
@@ -75,13 +77,17 @@ object Movimientos {
     }
   }
 
-  case class Fusion(guerrero: Guerrero) extends Movimiento {
+  case object Fusion extends Movimiento {
     def apply(pareja: Pareja): Pareja = {
-      pareja.mapAtacante(atacante => {
-        atacante.copy(energia = atacante.energia.fusionadaA(pareja.atacado.energia),
-          movimientos = atacante.movimientos ++ pareja.atacado.movimientos)
+      pareja.especies match {
+        case (Humano() | Saiyajin(_, _) | Namekusein(), Humano() | Saiyajin(_, _) | Namekusein()) =>
+          pareja.mapAtacante(atacante => {
+            atacante.copy(energia = atacante.energia.fusionadaA(pareja.atacado.energia),
+              movimientos = atacante.movimientos ++ pareja.atacado.movimientos,
+              especie = Fusionado(atacante.especie))
+          })
+        case _ => pareja
       }
-      )
     }
   }
 
@@ -89,7 +95,7 @@ object Movimientos {
 
 case object GolpesNinja extends Movimiento {
   def apply(pareja: Pareja): Pareja = {
-    pareja.mapEspecies() match {
+    pareja.especies match {
       case (Humano(), Androide()) => ???
       case _ => ???
     }
