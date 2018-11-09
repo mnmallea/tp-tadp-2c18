@@ -1,0 +1,5 @@
+package dragonball
+
+object SaiyajinException {
+
+}

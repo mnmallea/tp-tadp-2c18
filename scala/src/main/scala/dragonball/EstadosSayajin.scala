@@ -1,0 +1,5 @@
+package dragonball
+
+class EstadosSayajin {
+
+}
