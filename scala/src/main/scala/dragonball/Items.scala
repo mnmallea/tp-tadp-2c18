@@ -11,8 +11,8 @@ object Items {
   val ArmaRoma: Pareja => Pareja = (pareja: Pareja) => {
     pareja.mapAtacado { guerrero =>
       guerrero.especie match {
-        case Androide(_) => guerrero
-        case _ if guerrero.energia < 300 => guerrero.copy(estado = Inconsciente)
+        case _: Androide => guerrero
+        case _ if guerrero.energia.actual < 300 => guerrero.copy(estado = Inconsciente)
       }
     }
   }
@@ -21,4 +21,5 @@ object Items {
   case object FotoDeLuna extends Item {
     def apply(pareja: Pareja): Pareja = pareja
   }
+
 }

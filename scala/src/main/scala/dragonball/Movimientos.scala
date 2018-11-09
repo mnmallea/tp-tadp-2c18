@@ -24,8 +24,8 @@ object Movimientos {
   case object CargarKi extends Movimiento {
     def apply(pareja: Pareja): Pareja = {
       pareja.mapAtacante(atacante => atacante.especie match {
-        case Androide(_) => atacante
-        case Saiyajin(Super(nivel), _, _) => atacante.aumentarEnergia(150 * nivel)
+        case Androide() => atacante
+        case Saiyajin(Super(nivel), _) => atacante.aumentarEnergia(150 * nivel)
         case _ => atacante.aumentarEnergia(100)
       }
       )
@@ -54,8 +54,8 @@ object Movimientos {
   case object ConvertirseEnMono extends Movimiento {
     def apply(pareja: Pareja): Pareja = {
       pareja.mapAtacante(atacante => atacante.especie match {
-        case especie: Saiyajin if especie.tieneCola && atacante.tieneItem(FotoDeLuna) =>
-          atacante.copy(especie = especie.convertirseEnMono())
+        case saiyajin: Saiyajin if saiyajin.tieneCola && atacante.tieneItem(FotoDeLuna) =>
+          atacante.copy(energia = atacante.energia.modificarMaximo(3 *).cargarAlMaximo, especie = saiyajin setEstado MonoGigante)
         case _ => atacante
       })
     }
@@ -64,33 +64,44 @@ object Movimientos {
   case object ConvertirseEnSS extends Movimiento {
     def apply(pareja: Pareja): Pareja = {
       pareja.mapAtacante(atacante => atacante.especie match {
-        case especie: Saiyajin if atacante.energia >= atacante.maximoPotencial / 2 =>
-          atacante.copy(especie = especie.convertirseEnSS())
+        case especie: Saiyajin if atacante.energia.actual >= atacante.energia.maximo / 2 =>
+          try {
+            atacante.copy(especie = especie.aumentarNivelSaiyajin)
+          } catch {
+            case _: SaiyajinException => atacante
+          }
         case _ => atacante
       })
     }
   }
 
   case class Fusion(guerrero: Guerrero) extends Movimiento {
-
-  }
-
-  case object GolpesNinja extends Movimiento {
     def apply(pareja: Pareja): Pareja = {
-      pareja.mapEspecies() match {
-        case (Humano(_), Androide(_)) => ???
-        case _ => ???
+      pareja.mapAtacante(atacante => {
+        atacante.copy(energia = atacante.energia.fusionadaA(pareja.atacado.energia),
+          movimientos = atacante.movimientos ++ pareja.atacado.movimientos)
       }
+      )
     }
   }
 
-  case object Explotar extends Movimiento {
-    def apply(pareja: Pareja): Pareja = {
-      pareja.mapEspecies() match {
-        case (Monstruo(_, _), _) | (Androide(_), _) => ???
-        case (Monstruo(_, _), Namekusein(_)) |  (Androide(_), Namekusein(_)) => ???
-        case _ => pareja
-      }
+}
+
+case object GolpesNinja extends Movimiento {
+  def apply(pareja: Pareja): Pareja = {
+    pareja.mapEspecies() match {
+      case (Humano(), Androide()) => ???
+      case _ => ???
     }
   }
+}
+
+case object Explotar extends Movimiento {
+  def apply(pareja: Pareja): Pareja = {
+    pareja.atacante.especie match {
+      case Androide() | Monstruo(_) => pareja.mapAtacante(_.explotar).mapAtacado(_.serAtacadoPorExplosion)
+      case _ => pareja
+    }
+  }
+
 }

@@ -7,8 +7,8 @@ import org.scalatest.{FreeSpec, Matchers}
 class MovimientoTest extends FreeSpec with Matchers {
 
   "Test de movimientos" - {
-    val androide = Guerrero("androide1785", List(), 100, 200, Androide(Energia(100,100)), Vivo, List())
-    val humano = Guerrero("iron man", List(), 100, 200, Humano(Energia(100,100)), Vivo, List())
+    val androide = Guerrero("androide1785", List(), Energia(100,200), Androide(), Vivo, Set())
+    val humano = Guerrero("iron man", List(), Energia(100,200), Humano(), Vivo, Set())
 
     "el androide se deja fajar por el humano y todo debería quedar igual" in {
       val resultado = DejarseFajar(Pareja(androide, humano))
@@ -28,7 +28,7 @@ class MovimientoTest extends FreeSpec with Matchers {
     "el humano ahora tiene la semilla del hermitaño, deberia recuperar su energia maxima" in {
       val resultado = UsarItem(SemillaDelErmitanio)(Pareja(humano.copy(inventario = List(SemillaDelErmitanio)), androide))
 
-      resultado.atacante.energia shouldBe 200 //todo verificar esta energia
+      resultado.atacante.energia.actual shouldBe 200
       resultado.atacado shouldBe androide
     }
 

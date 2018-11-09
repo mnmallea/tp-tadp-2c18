@@ -1,5 +1,3 @@
 package dragonball
 
-object SaiyajinException {
-
-}
+class SaiyajinException extends RuntimeException
