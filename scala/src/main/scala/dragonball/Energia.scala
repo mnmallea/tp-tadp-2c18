@@ -24,6 +24,8 @@ case class Energia(actual: Int, maximo: Int) {
 
   def disminuir(disminucion: Int): Energia = copy(actual = (actual - disminucion).max(0))
 
+  def disminuirConMinimo(disminucion: Int, unMinimo: Int): Energia = copy(actual = (actual - disminucion).max(unMinimo))
+
   def cargarAlMaximo: Energia = copy(actual = maximo)
 
   def modificarMaximo(f: Int => Int): Energia = copy(maximo = f(maximo))

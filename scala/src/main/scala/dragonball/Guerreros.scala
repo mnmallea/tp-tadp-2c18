@@ -9,7 +9,7 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
   def explotar: Guerrero = copy(energia = energia.modificarMaximo(_ => 0), estado = Muerto)
 
   def serAtacadoPorExplosion(unaCantidad: Int): Guerrero = especie match {
-    case Namekusein() => copy(energia = energia disminuir unaCantidad)  // todo: setear a 1 si es menor a 0
+    case Namekusein() => copy(energia = energia disminuirConMinimo(unaCantidad, 1))
     case _ => copy(energia = energia disminuir unaCantidad)
   }
 
