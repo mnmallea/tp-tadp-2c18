@@ -77,13 +77,13 @@ object Movimientos {
     }
   }
 
-  case object Fusion extends Movimiento {
+  case class Fusion(amigo: Guerrero) extends Movimiento {   // TODO: fijense si lo "arregle" bien, queda medio feo el match pero creo que es lo mejor
     def apply(pareja: Pareja): Pareja = {
-      pareja.especies match {
+      (pareja.atacante.especie, amigo.especie) match {
         case (Humano() | Saiyajin(_, _) | Namekusein(), Humano() | Saiyajin(_, _) | Namekusein()) =>
           pareja.mapAtacante(atacante => {
-            atacante.copy(energia = atacante.energia.fusionadaA(pareja.atacado.energia),
-              movimientos = atacante.movimientos ++ pareja.atacado.movimientos,
+            atacante.copy(energia = atacante.energia.fusionadaA(amigo.energia),
+              movimientos = atacante.movimientos ++ amigo.movimientos,
               especie = Fusionado(atacante.especie))
           })
         case _ => pareja
@@ -96,7 +96,7 @@ object Movimientos {
 case object GolpesNinja extends Movimiento {
   def apply(pareja: Pareja): Pareja = {
     pareja.especies match {
-      case (Humano(), Androide()) => ???
+      case (Humano(), Androide()) => pareja.mapAtacante(_.diminuirEnergia(33))
       case _ => ???
     }
   }

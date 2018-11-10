@@ -13,10 +13,11 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
     case _ => copy(energia = energia disminuir unaCantidad)
   }
 
-
   def tieneItem(item: Item): Boolean = inventario.contains(item)
 
   def aumentarEnergia(cantidad: Int) = this.copy(energia = energia aumentar cantidad)
+
+  def diminuirEnergia(disminucion: Int): Guerrero = this.copy(energia = energia disminuir disminucion)
 
   def recuperarPotencial: Guerrero = copy(energia = energia.cargarAlMaximo)
 
