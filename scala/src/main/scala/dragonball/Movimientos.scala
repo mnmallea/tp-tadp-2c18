@@ -105,7 +105,8 @@ case object GolpesNinja extends Movimiento {
 case object Explotar extends Movimiento {
   def apply(pareja: Pareja): Pareja = {
     pareja.atacante.especie match {
-      case Androide() | Monstruo(_) => pareja.mapAtacante(_.explotar).mapAtacado(_.serAtacadoPorExplosion)
+      case Androide() | Monstruo(_) => pareja.mapAtacante(_.explotar).mapAtacado(atacante =>
+        atacante.serAtacadoPorExplosion(atacante.cantidadEnergiaAlExplotar()))
       case _ => pareja
     }
   }

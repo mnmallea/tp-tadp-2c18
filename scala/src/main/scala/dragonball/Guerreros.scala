@@ -1,11 +1,16 @@
 package dragonball
 
 case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, especie: Especie, estado: EstadoGuerrero, movimientos: Set[Movimiento]) {
+  def cantidadEnergiaAlExplotar(): Int = this.especie.tipoEnergia match {
+    case _: ConKi => this.energia.actual * 2
+    case _: ConBateria => this.energia.actual * 3
+  }
+
   def explotar: Guerrero = copy(energia = energia.modificarMaximo(_ => 0), estado = Muerto)
 
-  def serAtacadoPorExplosion: Guerrero = especie match {
-    case Namekusein() => copy(energia = energia setActual 1)
-    case _ => copy(energia = energia setActual 0)
+  def serAtacadoPorExplosion(unaCantidad: Int): Guerrero = especie match {
+    case Namekusein() => copy(energia = energia disminuir unaCantidad)  // todo: setear a 1 si es menor a 0
+    case _ => copy(energia = energia disminuir unaCantidad)
   }
 
 

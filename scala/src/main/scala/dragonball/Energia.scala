@@ -17,6 +17,7 @@ trait ConBateria {
 
 
 case class Energia(actual: Int, maximo: Int) {
+
   def setActual(n: Int) = copy(actual = n)
 
   def aumentar(aumento: Int): Energia = copy(actual = (actual + aumento).min(maximo))
