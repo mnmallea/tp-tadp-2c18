@@ -1,11 +1,17 @@
 package dragonball
 
 
-sealed trait TipoEnergia
+sealed trait TipoEnergia {
+  def cantidadDeEnergiaAlExplotar(energiaActual: Int): Int
+}
 
-case object Ki extends TipoEnergia
+case object Ki extends TipoEnergia {
+  def cantidadDeEnergiaAlExplotar(energiaActual: Int): Int = energiaActual * 2
+}
 
-case object Bateria extends TipoEnergia
+case object Bateria extends TipoEnergia {
+  def cantidadDeEnergiaAlExplotar(energiaActual: Int): Int = energiaActual * 3
+}
 
 trait ConKi {
   def tipoEnergia: TipoEnergia = Ki
@@ -18,15 +24,15 @@ trait ConBateria {
 
 case class Energia(actual: Int, maximo: Int) {
 
-  def setActual(n: Int) = copy(actual = n)
+  def setActual(n: Int): Energia = copy(actual = n)
 
   def aumentar(aumento: Int): Energia = copy(actual = (actual + aumento).min(maximo))
 
-  def disminuir(disminucion: Int): Energia = copy(actual = (actual - disminucion).max(0))
-
-  def disminuirConMinimo(disminucion: Int, unMinimo: Int): Energia = copy(actual = (actual - disminucion).max(unMinimo))
+  def disminuir(disminucion: Int, unMinimo: Int = 0): Energia = copy(actual = (actual - disminucion).max(unMinimo))
 
   def cargarAlMaximo: Energia = copy(actual = maximo)
+
+  def bajarAlMinimo: Energia = setActual(0)
 
   def modificarMaximo(f: Int => Int): Energia = copy(maximo = f(maximo))
 

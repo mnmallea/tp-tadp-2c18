@@ -11,6 +11,13 @@ case class Pareja(atacante: Guerrero, atacado: Guerrero) {
     Pareja(atacante, f(atacado))
   }
 
+  def daniarAlMasDebil(cantidad: Int): Pareja = {
+    if (atacante.energia.actual < atacado.energia.actual)
+      mapAtacante(_ disminuirEnergia cantidad)
+    else
+      mapAtacado(_ disminuirEnergia cantidad)
+  }
+
   lazy val especies: (Especie, Especie) = (this.atacante.especie, this.atacado.especie)
 }
 
@@ -77,7 +84,7 @@ object Movimientos {
     }
   }
 
-  case class Fusion(amigo: Guerrero) extends Movimiento {   // TODO: fijense si lo "arregle" bien, queda medio feo el match pero creo que es lo mejor
+  case class Fusion(amigo: Guerrero) extends Movimiento { // TODO: fijense si lo "arregle" bien, queda medio feo el match pero creo que es lo mejor
     def apply(pareja: Pareja): Pareja = {
       (pareja.atacante.especie, amigo.especie) match {
         case (Humano() | Saiyajin(_, _) | Namekusein(), Humano() | Saiyajin(_, _) | Namekusein()) =>
@@ -88,26 +95,6 @@ object Movimientos {
           })
         case _ => pareja
       }
-    }
-  }
-
-}
-
-case object GolpesNinja extends Movimiento {
-  def apply(pareja: Pareja): Pareja = {
-    pareja.especies match {
-      case (Humano(), Androide()) => pareja.mapAtacante(_.diminuirEnergia(33))
-      case _ => ???
-    }
-  }
-}
-
-case object Explotar extends Movimiento {
-  def apply(pareja: Pareja): Pareja = {
-    pareja.atacante.especie match {
-      case Androide() | Monstruo(_) => pareja.mapAtacante(_.explotar).mapAtacado(atacado =>
-        atacado.serAtacadoPorExplosion(pareja.atacante.cantidadEnergiaAlExplotar()))
-      case _ => pareja
     }
   }
 

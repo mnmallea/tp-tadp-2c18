@@ -1,23 +1,57 @@
 package dragonball
 
-case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, especie: Especie, estado: EstadoGuerrero, movimientos: Set[Movimiento]) {
-  def cantidadEnergiaAlExplotar(): Int = this.especie.tipoEnergia match {
-    case _: ConKi => this.energia.actual * 2
-    case _: ConBateria => this.energia.actual * 3
-  }
+import dragonball.Items.SemillaDelErmitanio
+import dragonball.Movimientos.DejarseFajar
+
+case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, especie: Especie, estado: EstadoGuerrero,
+                    movimientos: Set[Movimiento], roundsDejandoseFajar: Int = 0) {
+
+
+  def tieneSuficienteEnergia(energiaNecesaria: Int): Boolean = energia.actual >= energiaNecesaria
+
+  def cantidadEnergiaAlExplotar(): Int = especie.tipoEnergia.cantidadDeEnergiaAlExplotar(energia.actual)
 
   def explotar: Guerrero = copy(energia = energia.modificarMaximo(_ => 0), estado = Muerto)
 
   def serAtacadoPorExplosion(unaCantidad: Int): Guerrero = especie match {
-    case Namekusein() => copy(energia = energia disminuirConMinimo(unaCantidad, 1))
+    case Namekusein() => copy(energia = energia disminuir(unaCantidad, 1))
     case _ => copy(energia = energia disminuir unaCantidad)
+  }
+
+  def recibirAtaqueDeEnergia(cantidad: Int): Guerrero = {
+    especie match {
+      case _: Androide => aumentarEnergia(cantidad)
+      case _ => disminuirEnergia(cantidad)
+    }
+  }
+
+  def puedeRealizarMovimiento(movimiento: Movimiento): Boolean = {
+    movimiento match {
+      case SemillaDelErmitanio => estado != Muerto
+      case _ => estado == Vivo
+    }
+  }
+
+  //TODO habría que validar que tengas el movimiento???
+  def realizarMovimientoContra(movimiento: Movimiento, otroGuerrero: Guerrero): Pareja = {
+    if (puedeRealizarMovimiento(movimiento)) {
+      movimiento(this, Pareja(this, otroGuerrero)).mapAtacante { guerrero =>
+        movimiento match {
+          case DejarseFajar =>
+            guerrero.copy(roundsDejandoseFajar = roundsDejandoseFajar + 1)
+          case _ => guerrero.copy(roundsDejandoseFajar = 0)
+        }
+      }
+    }
+    else
+      Pareja(this, otroGuerrero)
   }
 
   def tieneItem(item: Item): Boolean = inventario.contains(item)
 
   def aumentarEnergia(cantidad: Int) = this.copy(energia = energia aumentar cantidad)
 
-  def diminuirEnergia(disminucion: Int): Guerrero = this.copy(energia = energia disminuir disminucion)
+  def disminuirEnergia(disminucion: Int): Guerrero = this.copy(energia = energia disminuir disminucion)
 
   def recuperarPotencial: Guerrero = copy(energia = energia.cargarAlMaximo)
 
