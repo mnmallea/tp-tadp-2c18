@@ -41,9 +41,10 @@ class MovimientoTest extends FreeSpec with Matchers {
     "Fusiones" - {
 
       "fusion humano- androide" - {
-        val humanoFusion = humano.copy(movimientos = Set(Fusion))
         val namekuseinFusion = namekusein.copy(movimientos = Set(DejarseFajar, CargarKi))
-        val fusionado = Fusion(Pareja(humanoFusion, namekuseinFusion)).atacante
+        val fusion = Fusion(namekuseinFusion)
+        val humanoFusion = humano.copy(movimientos = Set(fusion))
+        val fusionado = fusion(Pareja(humanoFusion, namekuseinFusion)).atacante
         "el humano se fusiona con un namekusein" in {
           fusionado.especie shouldBe Fusionado(humanoFusion.especie)
         }
@@ -57,13 +58,13 @@ class MovimientoTest extends FreeSpec with Matchers {
         }
 
         "movimientos del fusionado" in {
-          fusionado.movimientos shouldBe Set(Fusion, DejarseFajar, CargarKi)
+          fusionado.movimientos shouldBe Set(Fusion(namekuseinFusion), DejarseFajar, CargarKi)
         }
 
       }
 
       "el humano intenta fusionarse con el androide pero no pasa nada" in {
-        val fusionado = Fusion(Pareja(humano, androide)).atacante
+        val fusionado = Fusion(androide)(Pareja(humano, androide)).atacante
         fusionado shouldBe humano
       }
 
