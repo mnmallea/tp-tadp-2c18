@@ -6,6 +6,8 @@ import dragonball.Movimientos.DejarseFajar
 case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, especie: Especie, estado: EstadoGuerrero,
                     movimientos: List[Movimiento], roundsDejandoseFajar: Int = 0) {
 
+  def perderEsferas() :Unit = ??? //TODO
+
   def gastarMunicion(arma: Arma, cantidad: Int = 1): Guerrero = {
     def restarMunicion(cantidad: Int, items: List[Item]): List[Item] = {
       if (cantidad > 0) {
@@ -35,6 +37,10 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
       case Municion(`arma`, cantidad) => cantidad
       case _ => 0
     }.sum
+  }
+
+  def cantidadDeEsferasDelDragon(): Int = {
+    inventario.count(_ == EsferaDeDragon)
   }
 
   lazy val cantidadDeItems: Int = inventario.size

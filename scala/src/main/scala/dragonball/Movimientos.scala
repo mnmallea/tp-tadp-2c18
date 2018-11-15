@@ -96,4 +96,28 @@ object Movimientos {
     }
   }
 
+  case class Magia(estado: EstadoGuerrero, sobreOponente: Boolean = true) {
+    def apply(pareja: Pareja): Pareja = {
+      if (sobreOponente) {
+        pareja.mapAtacante(atacante => atacante.especie match {
+          case Namekusein() | Monstruo(_) => pareja.atacado.estado(estado)
+          case _ if (atacante.cantidadDeEsferasDelDragon >= 7)  =>
+                {
+                  atacante.perderEsferas()
+                  pareja.atacado.estado(estado)
+                }
+        })
+      } else {
+        pareja.mapAtacante(atacante => atacante.especie match {
+          case Namekusein() | Monstruo(_) => atacante.estado(estado)
+          case _ if (atacante.cantidadDeEsferasDelDragon >= 7)  =>
+          {
+            atacante.perderEsferas()
+            atacante.estado(estado)
+          }
+        })
+      }
+    }
+  }
+
 }

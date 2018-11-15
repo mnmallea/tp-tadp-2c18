@@ -50,6 +50,7 @@ case object ArmaDeFuego extends Arma {
   }
 }
 
+case object EsferaDeDragon extends Item
 
 case object FotoDeLuna extends Item
 
