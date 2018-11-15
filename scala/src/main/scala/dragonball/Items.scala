@@ -28,7 +28,7 @@ case object ArmaRoma extends Arma {
 
 case object ArmaFilosa extends Arma {
   def apply(pareja: Pareja): Pareja = {
-    pareja.mapAtacado(_.disminuirEnergia(100 * pareja.atacante.energiaActual))
+    pareja.mapAtacado(_.disminuirEnergia(pareja.atacante.energiaActual % 100))
       .mapAtacado(atacado => atacado.especie match {
         case saiyajin: Saiyajin if saiyajin.tieneCola =>
           saiyajin perderColaDe atacado
@@ -42,7 +42,7 @@ case object ArmaDeFuego extends Arma {
     if (pareja.atacante.tieneMunicionDe(this)) {
       pareja.mapAtacado(atacado => atacado.especie match {
         case _: Humano => atacado.disminuirEnergia(20)
-        case _: Namekusein => atacado.disminuirEnergia(10)
+        case _: Namekusein if atacado.estado == Inconsciente => atacado.disminuirEnergia(10)
         case _ => atacado
       }).mapAtacante(_.gastarMunicion(this))
     } else
