@@ -6,7 +6,6 @@ trait ItemUsable extends Item {
   def apply(pareja: Pareja): Pareja
 }
 
-
 case object SemillaDelErmitanio extends ItemUsable {
   def apply(pareja: Pareja): Pareja = {
     pareja.mapAtacante(_.recuperarPotencial)

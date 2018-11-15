@@ -6,7 +6,7 @@ import dragonball.Movimientos.DejarseFajar
 case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, especie: Especie, estado: EstadoGuerrero,
                     movimientos: List[Movimiento], roundsDejandoseFajar: Int = 0) {
 
-  def perderEsferas() :Unit = ??? //TODO
+  def perderEsferas() :Guerrero = copy(inventario = inventario.filterNot(_.equals(EsferaDeDragon)))
 
   def gastarMunicion(arma: Arma, cantidad: Int = 1): Guerrero = {
     def restarMunicion(cantidad: Int, items: List[Item]): List[Item] = {
@@ -121,6 +121,7 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
   }
 
 
+  // aca no seria this en vez de atacante? - no toy seguro
   def pelearRound(movimiento: Movimiento)(oponente: Guerrero): Pareja = {
     val Pareja(atacante, atacado) = realizarMovimientoContra(movimiento, oponente)
     val mejorContrataque = atacado.movimientoMasEfectivoContra(atacante)(criterioCagon)
@@ -145,8 +146,7 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
     }._1
   }
 
-  def pelearContra(oponente: Guerrero)(planDeAtaque: PlanDeAtaque): Any = ???
-
+  def pelearContra(oponente: Guerrero)(planDeAtaque: PlanDeAtaque): ResultadoPelea = ???
 
 }
 

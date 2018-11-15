@@ -99,6 +99,22 @@ class MovimientoTest extends FreeSpec with Matchers {
 
     }
 
+    "Magia" - {
+      val resultadoMagia = Magia(Muerto)(Pareja(androide, humano))
+
+      "si un androide quiere hacer magia queda todo igual" in {
+        resultadoMagia.atacante shouldBe androide
+        resultadoMagia.atacado shouldBe humano
+      }
+
+      val namecheto = Guerrero("namename", List(), Energia(100, 200), Namekusein(), Vivo, List())
+      val resultadoMagia2 = Magia(Muerto)(Pareja(namecheto, humano))
+
+      "si un namekusein quiere hacer magia sobre el opononte cambia el estado del opononte" in {
+        resultadoMagia2.atacado.estado shouldBe Muerto
+      }
+
+    }
 
   }
 
