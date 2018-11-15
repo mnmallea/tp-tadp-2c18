@@ -1,8 +1,9 @@
+
+
 package object dragonball {
-  type Criterio = Pareja => Pareja => Double
+  type Movimiento = {def apply(pareja: Pareja): Pareja}
+
   type PlanDeAtaque = List[Movimiento]
-  type Movimiento = Pareja => Pareja
-  type Item = Pareja => Pareja
   type FormaDeDigerir = (Guerrero, Guerrero) => Guerrero
 
 }

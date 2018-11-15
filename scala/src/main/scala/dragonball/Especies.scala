@@ -5,10 +5,15 @@ sealed trait Especie {
 }
 
 case class Saiyajin(estado: EstadoSayajin, tieneCola: Boolean = true) extends Especie with ConKi {
-  def perderCola(): Saiyajin = estado match {
-    case MonoGigante => setEstado(Normal).copy(tieneCola = false)
-    case _ => copy(tieneCola = false)
+  def perderColaDe(guerrero: Guerrero): Guerrero = {
+    val guerreroLastimado = guerrero enegiaActual 1 especie this.perderCola
+    this.estado match {
+      case MonoGigante => guerreroLastimado.especie(this.setEstado(Normal)).estado(Inconsciente)
+      case _ => guerreroLastimado
+    }
   }
+
+  def perderCola: Saiyajin = copy(tieneCola = false)
 
   def setEstado(nuevoEstado: EstadoSayajin): Saiyajin = copy(estado = nuevoEstado)
 

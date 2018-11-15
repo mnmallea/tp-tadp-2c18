@@ -1,10 +1,10 @@
 package dragonball
 
 object Ataques {
-  type Ataque = Pareja => Pareja
+  type Ataque = {def apply(pareja: Pareja): Pareja}
 
 
-  case object GolpesNinja extends Ataque {
+  case object GolpesNinja {
     def apply(pareja: Pareja): Pareja = {
       pareja.especies match {
         case (Humano(), Androide()) => pareja mapAtacante (_ disminuirEnergia 10)
@@ -13,7 +13,7 @@ object Ataques {
     }
   }
 
-  case object Explotar extends Ataque {
+  case object Explotar {
     def apply(pareja: Pareja): Pareja = {
       pareja.atacante.especie match {
         case Androide() | Monstruo(_) => pareja.mapAtacante(_.explotar).mapAtacado(atacado =>
@@ -24,7 +24,7 @@ object Ataques {
 
   }
 
-  case class Onda(energiaNecesaria: Int) extends Ataque {
+  case class Onda(energiaNecesaria: Int) {
     def apply(pareja: Pareja): Pareja = {
       if (pareja.atacante.tieneSuficienteEnergia(energiaNecesaria))
         pareja.mapAtacante(_.disminuirEnergia(energiaNecesaria))
@@ -39,7 +39,7 @@ object Ataques {
     }
   }
 
-  case object Genkidama extends Ataque {
+  case object Genkidama {
     def apply(pareja: Pareja): Pareja = {
       pareja.mapAtacado(atacado => atacado.recibirAtaqueDeEnergia(10 ^ atacado.roundsDejandoseFajar))
     }

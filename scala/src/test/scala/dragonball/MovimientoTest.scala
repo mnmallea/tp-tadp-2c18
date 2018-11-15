@@ -1,15 +1,14 @@
 package dragonball
 
-import dragonball.Items._
 import dragonball.Movimientos._
 import org.scalatest.{FreeSpec, Matchers}
 
 class MovimientoTest extends FreeSpec with Matchers {
 
   "Test de movimientos" - {
-    val androide = Guerrero("androide1785", List(), Energia(100, 200), Androide(), Vivo, Set())
-    val humano = Guerrero("iron man", List(), Energia(100, 200), Humano(), Vivo, Set())
-    val namekusein = Guerrero("name", List(), Energia(100, 300), Namekusein(), Vivo, Set())
+    val androide = Guerrero("androide1785", List(), Energia(100, 200), Androide(), Vivo, List())
+    val humano = Guerrero("iron man", List(), Energia(100, 200), Humano(), Vivo, List())
+    val namekusein = Guerrero("name", List(), Energia(100, 300), Namekusein(), Vivo, List())
 
     "el androide se deja fajar por el humano y todo debería quedar igual" in {
       val resultado = DejarseFajar(Pareja(androide, humano))
@@ -41,9 +40,9 @@ class MovimientoTest extends FreeSpec with Matchers {
     "Fusiones" - {
 
       "fusion humano- androide" - {
-        val namekuseinFusion = namekusein.copy(movimientos = Set(DejarseFajar, CargarKi))
+        val namekuseinFusion = namekusein.copy(movimientos = List[Movimiento](DejarseFajar, CargarKi))
         val fusion = Fusion(namekuseinFusion)
-        val humanoFusion = humano.copy(movimientos = Set(fusion))
+        val humanoFusion = humano.copy(movimientos = List(fusion))
         val fusionado = fusion(Pareja(humanoFusion, namekuseinFusion)).atacante
         "el humano se fusiona con un namekusein" in {
           fusionado.especie shouldBe Fusionado(humanoFusion.especie)
@@ -58,7 +57,7 @@ class MovimientoTest extends FreeSpec with Matchers {
         }
 
         "movimientos del fusionado" in {
-          fusionado.movimientos shouldBe Set(Fusion(namekuseinFusion), DejarseFajar, CargarKi)
+          fusionado.movimientos shouldBe List(Fusion(namekuseinFusion), DejarseFajar, CargarKi)
         }
 
       }
@@ -75,7 +74,7 @@ class MovimientoTest extends FreeSpec with Matchers {
 
       def convertirAMono(x: Guerrero) = ConvertirseEnMono(Pareja(x, humano)).atacante
 
-      val saiyajin = Guerrero("julian ezequiel", List(), Energia(100, 100), Saiyajin(Normal), Vivo, Set())
+      val saiyajin = Guerrero("julian ezequiel", List(), Energia(100, 100), Saiyajin(Normal), Vivo, List())
 
       "Conversión exitosa" - {
         val nuevoGuerrero = convertirASS(saiyajin)

@@ -1,7 +1,5 @@
 package dragonball
 
-import dragonball.Items.FotoDeLuna
-
 case class Pareja(atacante: Guerrero, atacado: Guerrero) {
   def mapAtacante(f: Guerrero => Guerrero): Pareja = {
     Pareja(f(atacante), atacado)
@@ -24,11 +22,11 @@ case class Pareja(atacante: Guerrero, atacado: Guerrero) {
 
 object Movimientos {
 
-  case object DejarseFajar extends Movimiento {
+  case object DejarseFajar {
     def apply(pareja: Pareja): Pareja = pareja
   }
 
-  case object CargarKi extends Movimiento {
+  case object CargarKi {
     def apply(pareja: Pareja): Pareja = {
       pareja.mapAtacante(atacante => atacante.especie match {
         case Androide() => atacante
@@ -39,7 +37,7 @@ object Movimientos {
     }
   }
 
-  case class UsarItem(item: Item) extends Movimiento {
+  case class UsarItem(item: ItemUsable) {
     def apply(pareja: Pareja): Pareja = {
       if (pareja.atacante.tieneItem(item)) {
         item(pareja)
@@ -49,7 +47,7 @@ object Movimientos {
     }
   }
 
-  case object ComerseOponente extends Movimiento {
+  case object ComerseOponente {
     def apply(pareja: Pareja): Pareja = {
       pareja.mapAtacante(atacante => atacante.especie match {
         case especie: Monstruo => especie.formaDeDigerir(pareja.atacante, pareja.atacado)
@@ -58,7 +56,7 @@ object Movimientos {
     }
   }
 
-  case object ConvertirseEnMono extends Movimiento {
+  case object ConvertirseEnMono {
     def apply(pareja: Pareja): Pareja = {
       pareja.mapAtacante(atacante => atacante.especie match {
         case saiyajin: Saiyajin if saiyajin.tieneCola && atacante.tieneItem(FotoDeLuna) =>
@@ -68,7 +66,7 @@ object Movimientos {
     }
   }
 
-  case object ConvertirseEnSS extends Movimiento {
+  case object ConvertirseEnSS {
     def apply(pareja: Pareja): Pareja = {
       pareja.mapAtacante(atacante => atacante.especie match {
         case saiyayin: Saiyajin if atacante.energia.actual >= atacante.energia.maximo / 2 =>
@@ -84,7 +82,7 @@ object Movimientos {
     }
   }
 
-  case class Fusion(amigo: Guerrero) extends Movimiento { // TODO: fijense si lo "arregle" bien, queda medio feo el match pero creo que es lo mejor
+  case class Fusion(amigo: Guerrero) { // TODO: fijense si lo "arregle" bien, queda medio feo el match pero creo que es lo mejor
     def apply(pareja: Pareja): Pareja = {
       (pareja.atacante.especie, amigo.especie) match {
         case (Humano() | Saiyajin(_, _) | Namekusein(), Humano() | Saiyajin(_, _) | Namekusein()) =>

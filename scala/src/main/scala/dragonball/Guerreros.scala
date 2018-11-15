@@ -1,11 +1,51 @@
 package dragonball
 
-import dragonball.Items.SemillaDelErmitanio
+import dragonball.Criterios.Criterio
 import dragonball.Movimientos.DejarseFajar
 
 case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, especie: Especie, estado: EstadoGuerrero,
-                    movimientos: Set[Movimiento], roundsDejandoseFajar: Int = 0) {
+                    movimientos: List[Movimiento], roundsDejandoseFajar: Int = 0) {
 
+  def gastarMunicion(arma: Arma, cantidad: Int = 1): Guerrero = {
+    def restarMunicion(cantidad: Int, items: List[Item]): List[Item] = {
+      if (cantidad > 0) {
+        items match {
+          case Nil => List()
+          case unItem :: otrosItems => unItem match {
+            case Municion(`arma`, cantidadDisponible) =>
+              if (cantidadDisponible >= cantidad) {
+                Municion(arma, cantidadDisponible - cantidad) :: restarMunicion(0, otrosItems)
+              } else {
+                Municion(arma, 0) :: restarMunicion(cantidad - cantidadDisponible, otrosItems)
+              }
+            case _ => unItem :: restarMunicion(cantidad, otrosItems)
+          }
+        }
+      } else
+        items
+    }
+
+    copy(inventario = restarMunicion(cantidad, this.inventario))
+  }
+
+  def tieneMunicionDe(arma: Arma, cantidadRequerida: Int = 1): Boolean = cantidadDeMunicionDe(arma) >= cantidadRequerida
+
+  def cantidadDeMunicionDe(arma: Arma): Int = {
+    inventario.map {
+      case Municion(`arma`, cantidad) => cantidad
+      case _ => 0
+    }.sum
+  }
+
+  lazy val cantidadDeItems: Int = inventario.size
+
+  lazy val energiaActual: Int = energia.actual
+
+  def especie(unaEspecie: Especie): Guerrero = copy(especie = unaEspecie)
+
+  def estado(unEstado: EstadoGuerrero): Guerrero = copy(estado = unEstado)
+
+  def enegiaActual(cantidad: Int): Guerrero = this.copy(energia = energia.setActual(cantidad))
 
   def tieneSuficienteEnergia(energiaNecesaria: Int): Boolean = energia.actual >= energiaNecesaria
 
@@ -15,7 +55,7 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
 
   def serAtacadoPorExplosion(unaCantidad: Int): Guerrero = especie match {
     case Namekusein() => copy(energia = energia disminuir(unaCantidad, 1))
-    case _ => copy(energia = energia disminuir unaCantidad)
+    case _ => disminuirEnergia(unaCantidad)
   }
 
   def recibirAtaqueDeEnergia(cantidad: Int): Guerrero = {
@@ -35,7 +75,7 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
   //TODO habría que validar que tengas el movimiento???
   def realizarMovimientoContra(movimiento: Movimiento, otroGuerrero: Guerrero): Pareja = {
     if (puedeRealizarMovimiento(movimiento)) {
-      movimiento(this, Pareja(this, otroGuerrero)).mapAtacante { guerrero =>
+      movimiento(Pareja(this, otroGuerrero)).mapAtacante { guerrero =>
         movimiento match {
           case DejarseFajar =>
             guerrero.copy(roundsDejandoseFajar = roundsDejandoseFajar + 1)
@@ -55,13 +95,44 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
 
   def recuperarPotencial: Guerrero = copy(energia = energia.cargarAlMaximo)
 
-  def movimientoMasEfectivoContra(otroGuerrero: Guerrero)(criterio: Criterio): Option[Movimiento] = ???
+  def movimientoMasEfectivoContra(otroGuerrero: Guerrero)(criterio: Criterio): Option[Movimiento] = {
+    val parejaActual = Pareja(this, otroGuerrero)
+
+    def obtenerValor(movimiento: Movimiento) = criterio(parejaActual)(realizarMovimientoContra(movimiento, otroGuerrero))
+
+    movimientos match {
+      case Nil => None
+      case _ => Some(movimientos.filter(obtenerValor(_) >= 0).maxBy(obtenerValor))
+    }
+  }
+
+  def movimientoMasEfectivoContra2(otroGuerrero: Guerrero)(criterio: Criterio): Option[Movimiento] = {
+    val parejaActual = Pareja(this, otroGuerrero)
+
+    def obtenerValor(movimiento: Movimiento) = criterio(parejaActual)(realizarMovimientoContra(movimiento, otroGuerrero))
+
+    movimientos.foldLeft(None: Option[Movimiento]) { (semilla, movimiento) => {
+      semilla match {
+        case None if obtenerValor(movimiento) >= 0 => Some(movimiento)
+        case Some(movimientoSemilla) =>
+          if (obtenerValor(movimiento) > obtenerValor(movimientoSemilla))
+            Some(movimiento)
+          else
+            Some(movimientoSemilla)
+        case _ => None
+      }
+    }
+    }
+  }
+
 
   def pelearRound(movimiento: Movimiento)(oponente: Guerrero): (Guerrero, Guerrero) = ???
 
   def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(criterio: Criterio): Option[PlanDeAtaque] = ???
 
   def pelearContra(oponente: Guerrero)(planDeAtaque: PlanDeAtaque): Any = ???
+
+
 }
 
 trait EstadoGuerrero

@@ -1,14 +1,22 @@
 package dragonball
 
-object Items {
+trait Item
 
-  case object SemillaDelErmitanio extends Item {
-    def apply(pareja: Pareja): Pareja = {
-      pareja.mapAtacante(_.recuperarPotencial)
-    }
+trait ItemUsable extends Item {
+  def apply(pareja: Pareja): Pareja
+}
+
+
+case object SemillaDelErmitanio extends ItemUsable {
+  def apply(pareja: Pareja): Pareja = {
+    pareja.mapAtacante(_.recuperarPotencial)
   }
+}
 
-  val ArmaRoma: Pareja => Pareja = (pareja: Pareja) => {
+trait Arma extends ItemUsable
+
+case object ArmaRoma extends Arma {
+  def apply(pareja: Pareja): Pareja = {
     pareja.mapAtacado { guerrero =>
       guerrero.especie match {
         case _: Androide => guerrero
@@ -16,10 +24,33 @@ object Items {
       }
     }
   }
-
-
-  case object FotoDeLuna extends Item {
-    def apply(pareja: Pareja): Pareja = pareja
-  }
-
 }
+
+case object ArmaFilosa extends Arma {
+  def apply(pareja: Pareja): Pareja = {
+    pareja.mapAtacado(_.disminuirEnergia(100 * pareja.atacante.energiaActual))
+      .mapAtacado(atacado => atacado.especie match {
+        case saiyajin: Saiyajin if saiyajin.tieneCola =>
+          saiyajin perderColaDe atacado
+        case _ => atacado
+      })
+  }
+}
+
+case object ArmaDeFuego extends Arma {
+  def apply(pareja: Pareja): Pareja = {
+    if (pareja.atacante.tieneMunicionDe(this)) {
+      pareja.mapAtacado(atacado => atacado.especie match {
+        case _: Humano => atacado.disminuirEnergia(20)
+        case _: Namekusein => atacado.disminuirEnergia(10)
+        case _ => atacado
+      }).mapAtacante(_.gastarMunicion(this))
+    } else
+      pareja
+  }
+}
+
+
+case object FotoDeLuna extends Item
+
+case class Municion(arma: Arma, cantidad: Int) extends Item

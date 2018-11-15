@@ -34,7 +34,8 @@ case class Energia(actual: Int, maximo: Int) {
 
   def bajarAlMinimo: Energia = setActual(0)
 
-  def modificarMaximo(f: Int => Int): Energia = copy(maximo = f(maximo))
+  // todo revisar esto sino te quedaria un actual mayor al maximo
+  def modificarMaximo(f: Int => Int): Energia = copy(maximo = f(maximo), actual = actual.min(f(maximo)))
 
   def fusionadaA(otraEnergia: Energia): Energia = copy(actual = actual + otraEnergia.actual,
     maximo = maximo + otraEnergia.maximo)
