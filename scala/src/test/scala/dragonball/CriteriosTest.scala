@@ -36,6 +36,12 @@ class CriteriosTest extends FreeSpec with Matchers {
       }
 
     }
+    "tiene que tener algun mejor movimiento" in {
+      val androide = Guerrero("androide1785",
+        List(Municion(ArmaDeFuego, 3), ArmaDeFuego, Municion(ArmaRoma, 0), ArmaRoma),
+        Energia(100, 200), Androide(), Vivo, List(DejarseFajar))
+      androide.movimientoMasEfectivoContra(goku)(criterioOptimista) should not be empty
+    }
 
   }
 

@@ -9,6 +9,8 @@ object Criterios {
     despues.atacante.energiaActual - antes.atacado.energiaActual
   }
 
+  def criterioOptimista(antes: Pareja)(despues: Pareja): Double = 100
+
   def criterioMayorDanioRealizado(antes: Pareja)(despues: Pareja): Double = {
     antes.atacado.energiaActual - despues.atacado.energiaActual
   }
