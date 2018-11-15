@@ -1,6 +1,6 @@
 package dragonball
 
-import dragonball.Criterios.Criterio
+import dragonball.Criterios._
 import dragonball.Movimientos.DejarseFajar
 
 case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, especie: Especie, estado: EstadoGuerrero,
@@ -100,17 +100,6 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
 
     def obtenerValor(movimiento: Movimiento) = criterio(parejaActual)(realizarMovimientoContra(movimiento, otroGuerrero))
 
-    movimientos match {
-      case Nil => None
-      case _ => Some(movimientos.filter(obtenerValor(_) >= 0).maxBy(obtenerValor))
-    }
-  }
-
-  def movimientoMasEfectivoContra2(otroGuerrero: Guerrero)(criterio: Criterio): Option[Movimiento] = {
-    val parejaActual = Pareja(this, otroGuerrero)
-
-    def obtenerValor(movimiento: Movimiento) = criterio(parejaActual)(realizarMovimientoContra(movimiento, otroGuerrero))
-
     movimientos.foldLeft(None: Option[Movimiento]) { (semilla, movimiento) => {
       semilla match {
         case None if obtenerValor(movimiento) >= 0 => Some(movimiento)
@@ -126,9 +115,29 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
   }
 
 
-  def pelearRound(movimiento: Movimiento)(oponente: Guerrero): (Guerrero, Guerrero) = ???
+  def pelearRound(movimiento: Movimiento)(oponente: Guerrero): Pareja = {
+    val Pareja(atacante, atacado) = realizarMovimientoContra(movimiento, oponente)
+    val mejorContrataque = atacado.movimientoMasEfectivoContra(atacante)(criterioCagon)
+    mejorContrataque match {
+      case None => Pareja(atacante, atacado)
+      case Some(unMovimiento) => atacado.realizarMovimientoContra(unMovimiento, atacante)
+    }
+  }
 
-  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(criterio: Criterio): Option[PlanDeAtaque] = ???
+  def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(criterio: Criterio): Option[PlanDeAtaque] = {
+    (1 to cantidadDeRounds toList).foldLeft((Some(Nil), Pareja(this, oponente)): (Option[PlanDeAtaque], Pareja)) {
+      (tupla, _) =>
+        (tupla._1.flatMap { movimientos =>
+          movimientoMasEfectivoContra(tupla._2.atacado)(criterio) match {
+            case None => None
+            case Some(movimiento) => Some(movimientos ++ List(movimiento))
+          }
+        }, movimientoMasEfectivoContra(tupla._2.atacado)(criterio) match {
+          case None => tupla._2
+          case Some(movimiento) => pelearRound(movimiento)(tupla._2.atacado)
+        })
+    }._1
+  }
 
   def pelearContra(oponente: Guerrero)(planDeAtaque: PlanDeAtaque): Any = ???
 

@@ -13,11 +13,11 @@ class CriteriosTest extends FreeSpec with Matchers {
       Saiyajin(MonoGigante), Vivo, List())
 
     "vegueta no tiene un mejor movimiento porque no tiene movimientos :(" in {
-      vegeta.movimientoMasEfectivoContra2(goku)(criterioCagon) shouldBe None
+      vegeta.movimientoMasEfectivoContra(goku)(criterioCagon) shouldBe None
     }
 
     "El mejor movimiento de goku deberia ser cargar ki con el criterio de daniar mas" in {
-      goku.movimientoMasEfectivoContra2(vegeta)(criterioMayorDanioRealizado) shouldBe Some(UsarItem(ArmaFilosa))
+      goku.movimientoMasEfectivoContra(vegeta)(criterioMayorDanioRealizado) shouldBe Some(UsarItem(ArmaFilosa))
     }
 
     "no deberia tener mejor movimiento con el criterio cagon" - {
@@ -32,7 +32,7 @@ class CriteriosTest extends FreeSpec with Matchers {
       }
 
       "no deberia tener un mejor movimiento porque todos implican perder energia" in {
-        guerrero.movimientoMasEfectivoContra2(vegeta)(criterioCagon) shouldBe None
+        guerrero.movimientoMasEfectivoContra(vegeta)(criterioCagon) shouldBe None
       }
 
     }
