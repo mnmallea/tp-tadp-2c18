@@ -6,7 +6,7 @@ import dragonball.Movimientos.DejarseFajar
 case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, especie: Especie, estado: EstadoGuerrero,
                     movimientos: List[Movimiento], roundsDejandoseFajar: Int = 0) {
 
-  def perderEsferas() :Guerrero = copy(inventario = inventario.filterNot(_.equals(EsferaDeDragon)))
+  def perderEsferas(): Guerrero = copy(inventario = inventario.filterNot(_.equals(EsferaDeDragon)))
 
   def gastarMunicion(arma: Arma, cantidad: Int = 1): Guerrero = {
     def restarMunicion(cantidad: Int, items: List[Item]): List[Item] = {
@@ -97,7 +97,13 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
 
   def aumentarEnergia(cantidad: Int) = this.copy(energia = energia aumentar cantidad)
 
-  def disminuirEnergia(disminucion: Int): Guerrero = this.copy(energia = energia disminuir disminucion)
+  def disminuirEnergia(disminucion: Int): Guerrero = {
+    this.copy(energia = energia disminuir disminucion).verificarEstado()
+  }
+
+  def verificarEstado(): Guerrero = {
+    if(this.energia.actual == 0) this.copy(estado = Muerto) else this
+  }
 
   def recuperarPotencial: Guerrero = copy(energia = energia.cargarAlMaximo)
 
@@ -144,21 +150,18 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
     }._1
   }
 
-  def pelearContra(oponente: Guerrero)(planDeAtaque: Option[PlanDeAtaque]): ResultadoPelea = ???
-
-//  {
-//    val resultadoPareja = planDeAtaque.foldLeft(Pareja(this, oponente)) { (pareja, movimiento) =>
-//      pareja.estados match {
-//        case (Muerto, _) | (_, Muerto) => pareja //TODO: Esto sigue iterando, habria que cortar?
-//        case _ => pareja.atacante.pelearRound(movimiento)(pareja.atacado)
-//      }
-//     }
-//    resultadoPareja.estados match {
-//      case (_, Muerto) => Right(resultadoPareja.atacante)
-//      case (Muerto, _) => Right(resultadoPareja.atacado)
-//      case _ => Left(resultadoPareja)
-//    }
-//  }
+  def pelearContra(oponente: Guerrero)(planDeAtaque: PlanDeAtaque): ResultadoPelea = {
+    planDeAtaque.foldLeft(Peleando(Pareja(this, oponente)): ResultadoPelea) { (peleando, movimiento) =>
+      peleando.flatMap(p => {
+        val pDespuesDePelear = p.atacante.pelearRound(movimiento)(p.atacado)
+        pDespuesDePelear.estados match {
+          case (_, Muerto) => Ganador(pDespuesDePelear.atacante)
+          case (Muerto, _) => Ganador(pDespuesDePelear.atacado)
+          case _ => Peleando(pDespuesDePelear)
+        }
+      })
+    }
+  }
 }
 
 trait EstadoGuerrero
