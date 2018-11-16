@@ -17,6 +17,8 @@ case class Pareja(atacante: Guerrero, atacado: Guerrero) {
   }
 
   lazy val especies: (Especie, Especie) = (this.atacante.especie, this.atacado.especie)
+
+  lazy val estados: (EstadoGuerrero, EstadoGuerrero) = (this.atacante.estado, this.atacado.estado)
 }
 
 

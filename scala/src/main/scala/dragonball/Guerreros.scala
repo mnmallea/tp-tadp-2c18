@@ -120,8 +120,6 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
     }
   }
 
-
-  // aca no seria this en vez de atacante? - no toy seguro
   def pelearRound(movimiento: Movimiento)(oponente: Guerrero): Pareja = {
     val Pareja(atacante, atacado) = realizarMovimientoContra(movimiento, oponente)
     val mejorContrataque = atacado.movimientoMasEfectivoContra(atacante)(criterioCagon)
@@ -146,8 +144,21 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
     }._1
   }
 
-  def pelearContra(oponente: Guerrero)(planDeAtaque: PlanDeAtaque): ResultadoPelea = ???
+  def pelearContra(oponente: Guerrero)(planDeAtaque: Option[PlanDeAtaque]): ResultadoPelea = ???
 
+//  {
+//    val resultadoPareja = planDeAtaque.foldLeft(Pareja(this, oponente)) { (pareja, movimiento) =>
+//      pareja.estados match {
+//        case (Muerto, _) | (_, Muerto) => pareja //TODO: Esto sigue iterando, habria que cortar?
+//        case _ => pareja.atacante.pelearRound(movimiento)(pareja.atacado)
+//      }
+//     }
+//    resultadoPareja.estados match {
+//      case (_, Muerto) => Right(resultadoPareja.atacante)
+//      case (Muerto, _) => Right(resultadoPareja.atacado)
+//      case _ => Left(resultadoPareja)
+//    }
+//  }
 }
 
 trait EstadoGuerrero
