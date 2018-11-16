@@ -136,18 +136,16 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
   }
 
   def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(criterio: Criterio): Option[PlanDeAtaque] = {
-    (1 to cantidadDeRounds toList).foldLeft((Some(Nil), Pareja(this, oponente)): (Option[PlanDeAtaque], Pareja)) {
-      (tupla, _) =>
-        (tupla._1.flatMap { movimientos =>
-          movimientoMasEfectivoContra(tupla._2.atacado)(criterio) match {
-            case None => None
-            case Some(movimiento) => Some(movimientos ++ List(movimiento))
+    type EstadoAtaque = (PlanDeAtaque, Pareja)
+
+    (1 to cantidadDeRounds).foldLeft(Some((Nil, Pareja(this, oponente))): Option[EstadoAtaque]) { (option, _) =>
+      option.flatMap {
+        case (unosMovimientos: PlanDeAtaque, Pareja(atacante, atacado)) =>
+          movimientoMasEfectivoContra(atacado)(criterio).fold(None: Option[EstadoAtaque]) {
+            unMovimiento => Some((unosMovimientos ++ List(unMovimiento), atacante.pelearRound(unMovimiento)(atacado)))
           }
-        }, movimientoMasEfectivoContra(tupla._2.atacado)(criterio) match {
-          case None => tupla._2
-          case Some(movimiento) => pelearRound(movimiento)(tupla._2.atacado)
-        })
-    }._1
+      }
+    }.fold(None: Option[PlanDeAtaque])(t => Some(t._1))
   }
 
   def pelearContra(oponente: Guerrero)(planDeAtaque: PlanDeAtaque): ResultadoPelea = {
