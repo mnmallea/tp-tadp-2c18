@@ -102,7 +102,7 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
   }
 
   def verificarEstado(): Guerrero = {
-    if(this.energia.actual == 0) this.copy(estado = Muerto) else this
+    if (this.energia.actual == 0) this.copy(estado = Muerto) else this
   }
 
   def recuperarPotencial: Guerrero = copy(energia = energia.cargarAlMaximo)
@@ -131,7 +131,7 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
     val mejorContrataque = atacado.movimientoMasEfectivoContra(atacante)(criterioCagon)
     mejorContrataque match {
       case None => Pareja(atacante, atacado)
-      case Some(unMovimiento) => atacado.realizarMovimientoContra(unMovimiento, atacante)
+      case Some(unMovimiento) => atacado.realizarMovimientoContra(unMovimiento, atacante).flip
     }
   }
 
@@ -166,8 +166,8 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
 
 trait EstadoGuerrero
 
-object Vivo extends EstadoGuerrero
+case object Vivo extends EstadoGuerrero
 
-object Inconsciente extends EstadoGuerrero
+case object Inconsciente extends EstadoGuerrero
 
-object Muerto extends EstadoGuerrero
+case object Muerto extends EstadoGuerrero

@@ -16,6 +16,8 @@ case class Pareja(atacante: Guerrero, atacado: Guerrero) {
       mapAtacado(_ disminuirEnergia cantidad)
   }
 
+  def flip: Pareja = copy(atacado = atacante, atacante = atacado)
+
   lazy val especies: (Especie, Especie) = (this.atacante.especie, this.atacado.especie)
 
   lazy val estados: (EstadoGuerrero, EstadoGuerrero) = (this.atacante.estado, this.atacado.estado)
@@ -104,15 +106,15 @@ object Movimientos {
         pareja.atacante.especie match {
           case Namekusein() | Monstruo(_) =>
             pareja.copy(atacado = pareja.atacado.estado(estado))
-          case _ if (pareja.atacante.cantidadDeEsferasDelDragon == 7)  =>
-                  pareja.copy(atacante = pareja.atacante.perderEsferas(), atacado = pareja.atacado.estado(estado))
+          case _ if (pareja.atacante.cantidadDeEsferasDelDragon == 7) =>
+            pareja.copy(atacante = pareja.atacante.perderEsferas(), atacado = pareja.atacado.estado(estado))
           case _ => pareja
         }
       } else {
         pareja.atacante.especie match {
           case Namekusein() | Monstruo(_) =>
             pareja.copy(atacado = pareja.atacante.estado(estado))
-          case _ if (pareja.atacante.cantidadDeEsferasDelDragon == 7)  =>
+          case _ if (pareja.atacante.cantidadDeEsferasDelDragon == 7) =>
             pareja.copy(atacante = pareja.atacante.perderEsferas(), atacado = pareja.atacante.estado(estado))
           case _ => pareja
         }
