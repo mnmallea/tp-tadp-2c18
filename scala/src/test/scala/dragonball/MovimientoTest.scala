@@ -103,9 +103,17 @@ class MovimientoTest extends FreeSpec with Matchers {
 
     "Comerse oponente" - {
 
-      val todoIgual = ComerseOponente((Pareja(humano, androide)) )
       "si un humano intenta comer todo sigue igual" in {
+        val todoIgual = ComerseOponente((Pareja(humano, androide)) )
         todoIgual.atacante shouldBe humano
+        todoIgual.atacado shouldBe androide
+      }
+
+      val monstruoDebil = Guerrero("debil", List(), Energia(40, 200), Monstruo(aprenderTodosLosMovimientos), Vivo, List())
+
+      "si el monstruo tiene menos energia que el humano todo sigue igual" in {
+        val todoIgual = ComerseOponente((Pareja(monstruoDebil, androide)) )
+        todoIgual.atacante shouldBe monstruoDebil
         todoIgual.atacado shouldBe androide
       }
 
