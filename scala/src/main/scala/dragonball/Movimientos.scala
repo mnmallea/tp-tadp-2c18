@@ -64,7 +64,7 @@ object Movimientos {
     def apply(pareja: Pareja): Pareja = {
       pareja.mapAtacante(atacante => atacante.especie match {
         case saiyajin: Saiyajin if saiyajin.tieneCola && atacante.tieneItem(FotoDeLuna) =>
-          atacante.copy(energia = atacante.energia.modificarMaximo(3 *).cargarAlMaximo, especie = saiyajin setEstado MonoGigante)
+          atacante.mapEnergia(_.modificarMaximo(3 *).cargarAlMaximo).especie(saiyajin setEstado MonoGigante)
         case _ => atacante
       })
     }
@@ -76,8 +76,8 @@ object Movimientos {
         case saiyayin: Saiyajin if atacante.energia.actual >= atacante.energia.maximo / 2 =>
           try {
             val nuevoNivel = saiyayin.proximoNivelSaiyayin
-            atacante.copy(especie = saiyayin setEstado Super(nuevoNivel),
-              energia = atacante.energia.modificarMaximo(_ * 5 * nuevoNivel))
+            atacante.especie(saiyayin setEstado Super(nuevoNivel))
+              .mapEnergia(_.modificarMaximo(_ * 5 * nuevoNivel))
           } catch {
             case _: SaiyajinException => atacante
           }
@@ -86,14 +86,14 @@ object Movimientos {
     }
   }
 
-  case class Fusion(amigo: Guerrero) { // TODO: fijense si lo "arregle" bien, queda medio feo el match pero creo que es lo mejor
+  case class Fusion(amigo: Guerrero) {
     def apply(pareja: Pareja): Pareja = {
       (pareja.atacante.especie, amigo.especie) match {
         case (Humano() | Saiyajin(_, _) | Namekusein(), Humano() | Saiyajin(_, _) | Namekusein()) =>
           pareja.mapAtacante(atacante => {
-            atacante.copy(energia = atacante.energia.fusionadaA(amigo.energia),
-              movimientos = atacante.movimientos ++ amigo.movimientos,
-              especie = Fusionado(atacante.especie))
+            atacante.mapEnergia(_.fusionadaA(amigo.energia))
+              .aprenderMovimientos(amigo.movimientos)
+              .especie(Fusionado(atacante.especie))
           })
         case _ => pareja
       }
@@ -106,7 +106,7 @@ object Movimientos {
         pareja.atacante.especie match {
           case Namekusein() | Monstruo(_) =>
             pareja.copy(atacado = pareja.atacado.estado(estado))
-          case _ if (pareja.atacante.cantidadDeEsferasDelDragon == 7) =>
+          case _ if pareja.atacante.cantidadDeEsferasDelDragon == 7 =>
             pareja.copy(atacante = pareja.atacante.perderEsferas(), atacado = pareja.atacado.estado(estado))
           case _ => pareja
         }
@@ -114,12 +114,13 @@ object Movimientos {
         pareja.atacante.especie match {
           case Namekusein() | Monstruo(_) =>
             pareja.copy(atacado = pareja.atacante.estado(estado))
-          case _ if (pareja.atacante.cantidadDeEsferasDelDragon == 7) =>
+          case _ if pareja.atacante.cantidadDeEsferasDelDragon == 7 =>
             pareja.copy(atacante = pareja.atacante.perderEsferas(), atacado = pareja.atacante.estado(estado))
           case _ => pareja
         }
       }
     }
   }
+
 
 }

@@ -19,7 +19,7 @@ case object ArmaRoma extends Arma {
     pareja.mapAtacado { guerrero =>
       guerrero.especie match {
         case _: Androide => guerrero
-        case _ if guerrero.energia.actual < 300 => guerrero.copy(estado = Inconsciente)
+        case _ if guerrero.energia.actual < 300 => guerrero.estado(Inconsciente)
       }
     }
   }
@@ -27,7 +27,7 @@ case object ArmaRoma extends Arma {
 
 case object ArmaFilosa extends Arma {
   def apply(pareja: Pareja): Pareja = {
-    pareja.mapAtacado(_.disminuirEnergia(pareja.atacante.energiaActual % 100))
+    pareja.mapAtacado(_.disminuirEnergia(pareja.atacante.energiaActual / 100))
       .mapAtacado(atacado => atacado.especie match {
         case saiyajin: Saiyajin if saiyajin.tieneCola =>
           saiyajin perderColaDe atacado
