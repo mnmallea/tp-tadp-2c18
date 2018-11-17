@@ -93,6 +93,8 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
       Pareja(this, otroGuerrero)
   }
 
+  def aprenderMovimientos(unosMovimientos: List[Movimiento]): Guerrero = copy(movimientos = movimientos ++ unosMovimientos)
+
   def tieneItem(item: Item): Boolean = inventario.contains(item)
 
   def aumentarEnergia(cantidad: Int) = this.copy(energia = energia aumentar cantidad)

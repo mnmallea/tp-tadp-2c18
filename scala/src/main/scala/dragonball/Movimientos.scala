@@ -53,10 +53,12 @@ object Movimientos {
 
   case object ComerseOponente {
     def apply(pareja: Pareja): Pareja = {
-      pareja.mapAtacante(atacante => atacante.especie match {
-        case especie: Monstruo => especie.formaDeDigerir(pareja.atacante, pareja.atacado)
-        case _ => atacante
-      })
+
+      pareja.atacante.especie match {
+        case especie: Monstruo =>
+          pareja.copy(especie.formaDeDigerir(pareja.atacante)(pareja.atacado), pareja.atacado.estado(Muerto))
+        case _ => pareja
+      }
     }
   }
 

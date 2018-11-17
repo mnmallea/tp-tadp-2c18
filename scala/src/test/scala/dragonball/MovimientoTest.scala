@@ -1,6 +1,7 @@
 package dragonball
 
 import dragonball.Movimientos._
+import dragonball.FormasDeDigerir._
 import org.scalatest.{FreeSpec, Matchers}
 
 class MovimientoTest extends FreeSpec with Matchers {
@@ -44,6 +45,7 @@ class MovimientoTest extends FreeSpec with Matchers {
         val fusion = Fusion(namekuseinFusion)
         val humanoFusion = humano.copy(movimientos = List(fusion))
         val fusionado = fusion(Pareja(humanoFusion, namekuseinFusion)).atacante
+
         "el humano se fusiona con un namekusein" in {
           fusionado.especie shouldBe Fusionado(humanoFusion.especie)
         }
@@ -97,6 +99,36 @@ class MovimientoTest extends FreeSpec with Matchers {
         convertirASS(saiyajin.copy(energia = Energia(49, 100))).especie.asInstanceOf[Saiyajin].estado shouldBe Normal
       }
 
+    }
+
+    "Comerse oponente" - {
+
+      val todoIgual = ComerseOponente((Pareja(humano, androide)) )
+      "si un humano intenta comer todo sigue igual" in {
+        todoIgual.atacante shouldBe humano
+        todoIgual.atacado shouldBe androide
+      }
+
+      val cell = Guerrero("cell", List(), Energia(100, 200), Monstruo(aprenderTodosLosMovimientos), Vivo, List())
+      val humanoMago = humano.copy(movimientos = List(Magia(Muerto)))
+
+      "si cell se come a un humano, humano muere " in {
+        val resultado = ComerseOponente(Pareja(cell, humanoMago))
+
+        resultado.atacado.estado shouldBe Muerto
+        resultado.atacante.movimientos.size shouldBe 1
+      }
+
+      val majinBuu = Guerrero("majinBuu", List(), Energia(100, 200), Monstruo(aprenderMovimientosDelUltimoOponente), Vivo, List())
+      val humanoFusionado = humano.copy(movimientos = List(Fusion(androide)))
+
+      "si majinBuu come a un humano mago y dsp a un humano fusionado" in {
+        val comerMago = ComerseOponente(Pareja(majinBuu, humanoMago))
+        val comerFusionado = ComerseOponente(Pareja(comerMago.atacante, humanoFusionado))
+
+        comerFusionado.atacante.movimientos.size shouldBe 1
+        comerFusionado.atacado.estado shouldBe Muerto
+      }
     }
 
     "Magia" - {
