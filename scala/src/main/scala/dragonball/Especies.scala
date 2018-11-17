@@ -2,6 +2,9 @@ package dragonball
 
 sealed trait Especie {
   def tipoEnergia: TipoEnergia
+
+  /* no hace nada por defecto */
+  def comer(pareja: Pareja): Pareja = pareja
 }
 
 case class Saiyajin(estado: EstadoSayajin, tieneCola: Boolean = true) extends Especie with ConKi {
@@ -33,7 +36,14 @@ case class Namekusein() extends Especie with ConKi
 
 //poderes curativos
 
-case class Monstruo(formaDeDigerir: FormaDeDigerir) extends Especie with ConKi
+case class Monstruo(formaDeDigerir: FormaDeDigerir) extends Especie with ConKi{
+  override def comer(pareja: Pareja): Pareja = {
+    if(pareja.atacante.energiaActual >= pareja.atacado.energiaActual)
+      pareja.copy(formaDeDigerir(pareja.atacante)(pareja.atacado), pareja.atacado.estado(Muerto))
+    else
+      pareja
+  }
+}
 
 //se comen a sus oponenentes
 

@@ -62,12 +62,7 @@ object Movimientos {
 
   case object ComerseOponente {
     def apply(pareja: Pareja): Pareja = {
-
-      pareja.atacante.especie match {
-        case especie: Monstruo if pareja.atacante.energiaActual >= pareja.atacado.energiaActual =>
-          pareja.copy(especie.formaDeDigerir(pareja.atacante)(pareja.atacado), pareja.atacado.estado(Muerto))
-        case _ => pareja
-      }
+      pareja.atacante.especie.comer(pareja)
     }
   }
 
