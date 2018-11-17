@@ -100,25 +100,23 @@ object Movimientos {
     }
   }
 
-  case class Magia(estado: EstadoGuerrero, sobreOponente: Boolean = true) {
+  case class Magia(nuevoEstado: EstadoGuerrero, sobreOponente: Boolean = true) {
     def apply(pareja: Pareja): Pareja = {
-      if (sobreOponente) {
-        pareja.atacante.especie match {
-          case Namekusein() | Monstruo(_) =>
-            pareja.copy(atacado = pareja.atacado.estado(estado))
-          case _ if pareja.atacante.cantidadDeEsferasDelDragon == 7 =>
-            pareja.copy(atacante = pareja.atacante.perderEsferas(), atacado = pareja.atacado.estado(estado))
-          case _ => pareja
-        }
-      } else {
-        pareja.atacante.especie match {
-          case Namekusein() | Monstruo(_) =>
-            pareja.copy(atacado = pareja.atacante.estado(estado))
-          case _ if pareja.atacante.cantidadDeEsferasDelDragon == 7 =>
-            pareja.copy(atacante = pareja.atacante.perderEsferas(), atacado = pareja.atacante.estado(estado))
-          case _ => pareja
-        }
+      pareja.atacante.especie match {
+        case Namekusein() | Monstruo(_) => cambiarEstado(pareja, debePerderEsferas = false)
+        case _ if pareja.atacante.cantidadDeEsferasDelDragon == 7 => cambiarEstado(pareja, debePerderEsferas = true)
+        case _ => pareja
       }
+
+    }
+
+    private def cambiarEstado(pareja: Pareja, debePerderEsferas: Boolean): Pareja = {
+      if (sobreOponente)
+        pareja.mapAtacado(atacado => atacado.estado(nuevoEstado))
+          .mapAtacante(atacante => if (debePerderEsferas) atacante.perderEsferas() else atacante)
+      else
+        pareja.mapAtacante { atacante => atacante.estado(nuevoEstado) }
+          .mapAtacado(atacado => if (debePerderEsferas) atacado.perderEsferas() else atacado)
     }
   }
 
