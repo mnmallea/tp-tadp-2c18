@@ -111,22 +111,22 @@ object Movimientos {
     }
   }
 
-  case class Magia(estado: EstadoGuerrero, sobreOponente: Boolean = true) {
+  case class Magia(cambiarEstado: CambiarEstado, sobreOponente: Boolean = true) {
     def apply(pareja: Pareja): Pareja = {
       if (sobreOponente) {
         pareja.atacante.especie match {
           case Namekusein() | Monstruo(_) =>
-            pareja.copy(atacado = pareja.atacado.estado(estado))
+            pareja.copy(atacado = cambiarEstado(pareja.atacado))
           case _ if (pareja.atacante.cantidadDeEsferasDelDragon == 7) =>
-            pareja.copy(atacante = pareja.atacante.perderEsferas(), atacado = pareja.atacado.estado(estado))
+            pareja.copy(atacante = pareja.atacante.perderEsferas(), atacado = cambiarEstado(pareja.atacado))
           case _ => pareja
         }
       } else {
         pareja.atacante.especie match {
           case Namekusein() | Monstruo(_) =>
-            pareja.copy(atacado = pareja.atacante.estado(estado))
+            pareja.copy(atacante = cambiarEstado(pareja.atacante))
           case _ if (pareja.atacante.cantidadDeEsferasDelDragon == 7) =>
-            pareja.copy(atacante = pareja.atacante.perderEsferas(), atacado = pareja.atacante.estado(estado))
+            pareja.copy(atacante = cambiarEstado(pareja.atacante.perderEsferas()))
           case _ => pareja
         }
       }

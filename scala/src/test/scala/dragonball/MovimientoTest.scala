@@ -11,6 +11,10 @@ class MovimientoTest extends FreeSpec with Matchers {
     val humano = Guerrero("iron man", List(), Energia(100, 200), Humano(), Vivo, List())
     val namekusein = Guerrero("name", List(), Energia(100, 300), Namekusein(), Vivo, List())
 
+    def borrarItems(guerrero: Guerrero): Guerrero = {
+      guerrero.copy(inventario = List())
+    }
+
     "el androide se deja fajar por el humano y todo debería quedar igual" in {
       val resultado = DejarseFajar(Pareja(androide, humano))
 
@@ -118,7 +122,7 @@ class MovimientoTest extends FreeSpec with Matchers {
       }
 
       val cell = Guerrero("cell", List(), Energia(100, 200), Monstruo(aprenderTodosLosMovimientos), Vivo, List())
-      val humanoMago = humano.copy(movimientos = List(Magia(Muerto)))
+      val humanoMago = humano.copy(movimientos = List(Magia(borrarItems)))
 
       "si cell se come a un humano, humano muere " in {
         val resultado = ComerseOponente(Pareja(cell, humanoMago))
@@ -140,7 +144,11 @@ class MovimientoTest extends FreeSpec with Matchers {
     }
 
     "Magia" - {
-      val resultadoMagia = Magia(Muerto)(Pareja(androide, humano))
+      def quitarEnergia(guerrero: Guerrero): Guerrero = {
+        guerrero.disminuirEnergia(20)
+      }
+
+      val resultadoMagia = Magia(quitarEnergia)(Pareja(androide, humano))
 
       "si un androide quiere hacer magia queda todo igual" in {
         resultadoMagia.atacante shouldBe androide
@@ -148,12 +156,19 @@ class MovimientoTest extends FreeSpec with Matchers {
       }
 
       val namecheto = Guerrero("namename", List(), Energia(100, 200), Namekusein(), Vivo, List())
-      val resultadoMagia2 = Magia(Muerto)(Pareja(namecheto, humano))
+      val resultadoMagia2 = Magia(quitarEnergia)(Pareja(namecheto, humano))
 
-      "si un namekusein quiere hacer magia sobre el opononte cambia el estado del opononte" in {
-        resultadoMagia2.atacado.estado shouldBe Muerto
+      "si un namekusein quiere hacer magia sobre el opononte cambia energia del opononte" in {
+        resultadoMagia2.atacado.energiaActual shouldBe 80
       }
 
+      val humanoConItems = Guerrero("iron man", List(ArmaRoma), Energia(100, 200), Humano(), Vivo, List())
+
+      "si un namekusein hace magia deja al oponente sin items" in {
+        val resultadoMagia = Magia(borrarItems)(Pareja(namecheto,humanoConItems))
+
+        resultadoMagia.atacado.inventario.size shouldBe 0
+      }
     }
 
   }
