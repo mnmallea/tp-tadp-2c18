@@ -114,40 +114,35 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
 
     def obtenerValor(movimiento: Movimiento) = criterio(parejaActual)(realizarMovimientoContra(movimiento, otroGuerrero))
 
-    movimientos.foldLeft(None: Option[Movimiento]) { (semilla, movimiento) => {
-      semilla match {
-        case None if obtenerValor(movimiento) >= 0 => Some(movimiento)
-        case Some(movimientoSemilla) =>
-          if (obtenerValor(movimiento) > obtenerValor(movimientoSemilla))
-            Some(movimiento)
-          else
-            Some(movimientoSemilla)
-        case _ => None
-      }
-    }
-    }
+    movimientos.filter(obtenerValor(_) > 0).sortBy(obtenerValor)(Ordering.Double.reverse).headOption
   }
 
   def pelearRound(movimiento: Movimiento)(oponente: Guerrero): Pareja = {
-    val Pareja(atacante, atacado) = realizarMovimientoContra(movimiento, oponente)
+    val pareja@Pareja(atacante, atacado) = realizarMovimientoContra(movimiento, oponente)
     val mejorContrataque = atacado.movimientoMasEfectivoContra(atacante)(criterioCagon)
-    mejorContrataque match {
-      case None => Pareja(atacante, atacado)
-      case Some(unMovimiento) => atacado.realizarMovimientoContra(unMovimiento, atacante).flip
-    }
+    mejorContrataque.map(atacado.realizarMovimientoContra(_, atacante).flip).getOrElse(pareja)
   }
 
   def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(criterio: Criterio): Option[PlanDeAtaque] = {
     type EstadoAtaque = (PlanDeAtaque, Pareja)
 
-    (1 to cantidadDeRounds).foldLeft(Some((Nil, Pareja(this, oponente))): Option[EstadoAtaque]) { (option, _) =>
-      option.flatMap {
-        case (unosMovimientos: PlanDeAtaque, Pareja(atacante, atacado)) =>
-          movimientoMasEfectivoContra(atacado)(criterio).fold(None: Option[EstadoAtaque]) {
-            unMovimiento => Some((unosMovimientos ++ List(unMovimiento), atacante.pelearRound(unMovimiento)(atacado)))
-          }
-      }
-    }.fold(None: Option[PlanDeAtaque])(t => Some(t._1))
+    case class SimulacionBatalla(pareja: Pareja, plan: PlanDeAtaque = Nil){
+      def movimientoMasEfectivo = movimientoMasEfectivoContra(pareja.atacado)(criterio)
+      def realizarMovimiento(movimiento: Movimiento) = copy(pareja.atacante.pelearRound(movimiento)(pareja.atacado), plan :+ movimiento)
+    }
+
+    (1 to cantidadDeRounds).foldLeft(Option(SimulacionBatalla(Pareja(this, oponente)))) { (maybeBatalla, _) =>
+      for(
+        batalla <- maybeBatalla;
+        movimiento <- batalla.movimientoMasEfectivo
+      ) yield batalla.realizarMovimiento(movimiento)
+//      estadoOption.flatMap {
+//        case (unosMovimientos: PlanDeAtaque, Pareja(atacante, atacado)) =>
+//          movimientoMasEfectivoContra(atacado)(criterio).flatMap {
+//            unMovimiento => Option((unosMovimientos ++ List(unMovimiento), atacante.pelearRound(unMovimiento)(atacado)))
+//          }
+//      }
+    }.map(_.plan)
   }
 
   def pelearContra(oponente: Guerrero)(planDeAtaque: PlanDeAtaque): ResultadoPelea = {

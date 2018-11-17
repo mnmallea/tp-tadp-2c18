@@ -29,6 +29,7 @@ object Ataques {
       if (pareja.atacante.tieneSuficienteEnergia(energiaNecesaria))
         pareja.mapAtacante(_.disminuirEnergia(energiaNecesaria))
           .mapAtacado { atacado =>
+            //Hacer encapsulamiento cuando hay type checks
             atacado.especie match {
               case _: Monstruo => atacado.recibirAtaqueDeEnergia(energiaNecesaria / 2)
               case _ => atacado.recibirAtaqueDeEnergia(energiaNecesaria * 2)
@@ -41,7 +42,7 @@ object Ataques {
 
   case object Genkidama {
     def apply(pareja: Pareja): Pareja = {
-      pareja.mapAtacado(atacado => atacado.recibirAtaqueDeEnergia(10 ^ atacado.roundsDejandoseFajar))
+      pareja.mapAtacado(atacado => atacado.recibirAtaqueDeEnergia(10 ^ pareja.atacante.roundsDejandoseFajar))
     }
   }
 

@@ -26,6 +26,15 @@ case class Pareja(atacante: Guerrero, atacado: Guerrero) {
 
 object Movimientos {
 
+//  trait MovimientoBase {
+//    def applyMovimiento(pareja: Pareja): Pareja
+//    def apply(pareja: Pareja): Pareja = applyMovimiento(pareja.mapAtacante(_.copy(roundsDejandoseFajar = 0)))
+//  }
+//
+//  case object DejarseFajar {
+//    def apply(pareja: Pareja): Pareja = pareja.mapAtacante(at => at.copy(roundsDejandoseFajar =  at.roundsDejandoseFajar + 1))
+//  }
+
   case object DejarseFajar {
     def apply(pareja: Pareja): Pareja = pareja
   }
