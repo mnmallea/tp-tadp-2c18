@@ -52,28 +52,19 @@ object Movimientos {
 
   case class UsarItem(item: ItemUsable) {
     def apply(pareja: Pareja): Pareja = {
-      if (pareja.atacante.tieneItem(item)) {
+      if (pareja.atacante.tieneItem(item))
         item(pareja)
-      } else {
+      else
         pareja
-      }
     }
   }
 
   case object ComerseOponente {
-    def apply(pareja: Pareja): Pareja = {
-      pareja.atacante.especie.comer(pareja)
-    }
+    def apply(pareja: Pareja): Pareja = pareja.atacante.especie.comer(pareja)
   }
 
   case object ConvertirseEnMono {
-    def apply(pareja: Pareja): Pareja = {
-      pareja.mapAtacante(atacante => atacante.especie match {
-        case saiyajin: Saiyajin if saiyajin.tieneCola && atacante.tieneItem(FotoDeLuna) =>
-          atacante.copy(energia = atacante.energia.modificarMaximo(3 *).cargarAlMaximo, especie = saiyajin setEstado MonoGigante)
-        case _ => atacante
-      })
-    }
+    def apply(pareja: Pareja): Pareja = pareja.atacante.especie.convertirseEnMono(pareja)
   }
 
   case object ConvertirseEnSS {

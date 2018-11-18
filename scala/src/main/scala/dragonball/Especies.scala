@@ -5,6 +5,9 @@ sealed trait Especie {
 
   /* no hace nada por defecto */
   def comer(pareja: Pareja): Pareja = pareja
+
+  /* no hace nada por defecto */
+  def convertirseEnMono(pareja: Pareja): Pareja = pareja
 }
 
 case class Saiyajin(estado: EstadoSayajin, tieneCola: Boolean = true) extends Especie with ConKi {
@@ -14,6 +17,14 @@ case class Saiyajin(estado: EstadoSayajin, tieneCola: Boolean = true) extends Es
       case MonoGigante => guerreroLastimado.especie(this.setEstado(Normal)).estado(Inconsciente)
       case _ => guerreroLastimado
     }
+  }
+
+  override def convertirseEnMono(pareja: Pareja): Pareja = {
+    if(tieneCola && pareja.atacante.tieneItem(FotoDeLuna)) {
+      val convertido = pareja.atacante.copy(energia = pareja.atacante.energia.modificarMaximo(3 *).cargarAlMaximo, especie = this setEstado MonoGigante)
+      pareja.copy(atacante = convertido)
+    }else
+      pareja
   }
 
   def perderCola: Saiyajin = copy(tieneCola = false)
