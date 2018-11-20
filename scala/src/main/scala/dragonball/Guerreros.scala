@@ -26,7 +26,6 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
       } else
         items
     }
-
     copy(inventario = restarMunicion(cantidad, this.inventario))
   }
 
@@ -39,9 +38,7 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
     }.sum
   }
 
-  def cantidadDeEsferasDelDragon(): Int = {
-    inventario.count(_ == EsferaDeDragon)
-  }
+  def cantidadDeEsferasDelDragon(): Int = inventario.count(_ == EsferaDeDragon)
 
   lazy val cantidadDeItems: Int = inventario.size
 
@@ -59,17 +56,9 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
 
   def explotar: Guerrero = copy(energia = energia.modificarMaximo(_ => 0), estado = Muerto)
 
-  def serAtacadoPorExplosion(unaCantidad: Int): Guerrero = especie match {
-    case Namekusein() => copy(energia = energia disminuir(unaCantidad, 1))
-    case _ => disminuirEnergia(unaCantidad)
-  }
+  def serAtacadoPorExplosion(unaCantidad: Int): Guerrero = this.especie.recibirAtaqueDeExplosion(unaCantidad, this)
 
-  def recibirAtaqueDeEnergia(cantidad: Int): Guerrero = {
-    especie match {
-      case _: Androide => aumentarEnergia(cantidad)
-      case _ => disminuirEnergia(cantidad)
-    }
-  }
+  def recibirAtaqueDeEnergia(cantidad: Int): Guerrero = especie.recibirAtaqueDeEnergia(cantidad, this)
 
   def puedeRealizarMovimiento(movimiento: Movimiento): Boolean = {
     movimiento match {
@@ -99,13 +88,9 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
 
   def aumentarEnergia(cantidad: Int) = this.copy(energia = energia aumentar cantidad)
 
-  def disminuirEnergia(disminucion: Int): Guerrero = {
-    this.copy(energia = energia disminuir disminucion).verificarEstado()
-  }
+  def disminuirEnergia(disminucion: Int): Guerrero = this.copy(energia = energia disminuir disminucion).verificarEstado()
 
-  def verificarEstado(): Guerrero = {
-    if (this.energia.actual == 0) this.copy(estado = Muerto) else this
-  }
+  def verificarEstado(): Guerrero = if (this.energia.actual == 0) this.copy(estado = Muerto) else this
 
   def recuperarPotencial: Guerrero = copy(energia = energia.cargarAlMaximo)
 

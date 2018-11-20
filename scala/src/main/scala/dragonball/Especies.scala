@@ -8,6 +8,12 @@ sealed trait Especie {
 
   /* no hace nada por defecto */
   def convertirseEnMono(pareja: Pareja): Pareja = pareja
+
+  def recibirAtaqueDeEnergia(cantidad: Int, guerrero: Guerrero): Guerrero = guerrero.disminuirEnergia(cantidad)
+
+  def recibirAtaqueDeExplosion(cantidad: Int, guerrero: Guerrero): Guerrero = guerrero.disminuirEnergia(cantidad)
+
+  def recibirAtaqueDeArmaRoma(pareja: Pareja): Pareja = if(pareja.atacado.energia.actual < 300) pareja.copy(pareja.atacante, pareja.atacado.copy(estado = Inconsciente)) else pareja
 }
 
 case class Saiyajin(estado: EstadoSayajin, tieneCola: Boolean = true) extends Especie with ConKi {
@@ -43,10 +49,11 @@ case class Saiyajin(estado: EstadoSayajin, tieneCola: Boolean = true) extends Es
 
 case class Humano() extends Especie with ConKi
 
-case class Namekusein() extends Especie with ConKi
+case class Namekusein() extends Especie with ConKi {
+  override def recibirAtaqueDeExplosion(cantidad: Int, guerrero: Guerrero): Guerrero = guerrero.copy(energia = guerrero.energia disminuir(cantidad,1))
+}
 
 //poderes curativos
-
 case class Monstruo(formaDeDigerir: FormaDeDigerir) extends Especie with ConKi{
   override def comer(pareja: Pareja): Pareja = {
     if(pareja.atacante.energiaActual >= pareja.atacado.energiaActual)
@@ -57,11 +64,13 @@ case class Monstruo(formaDeDigerir: FormaDeDigerir) extends Especie with ConKi{
 }
 
 //se comen a sus oponenentes
+case class Androide() extends Especie with ConBateria {
+  override def recibirAtaqueDeEnergia(cantidad: Int, guerrero: Guerrero): Guerrero = guerrero.aumentarEnergia(cantidad)
 
-case class Androide() extends Especie with ConBateria
+  override def recibirAtaqueDeArmaRoma(pareja: Pareja): Pareja = pareja
+}
 
 // no tienen ki, no necesitan comer y no pueden quedar inconscientes
-
 case class Fusionado(especieOriginal: Especie) extends Especie {
   def tipoEnergia: TipoEnergia = especieOriginal.tipoEnergia
 }

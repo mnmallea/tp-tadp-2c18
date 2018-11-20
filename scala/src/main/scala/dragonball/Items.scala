@@ -7,22 +7,13 @@ trait ItemUsable extends Item {
 }
 
 case object SemillaDelErmitanio extends ItemUsable {
-  def apply(pareja: Pareja): Pareja = {
-    pareja.mapAtacante(_.recuperarPotencial)
-  }
+  def apply(pareja: Pareja): Pareja = pareja.mapAtacante(_.recuperarPotencial)
 }
 
 trait Arma extends ItemUsable
 
 case object ArmaRoma extends Arma {
-  def apply(pareja: Pareja): Pareja = {
-    pareja.mapAtacado { guerrero =>
-      guerrero.especie match {
-        case _: Androide => guerrero
-        case _ if guerrero.energia.actual < 300 => guerrero.copy(estado = Inconsciente)
-      }
-    }
-  }
+  def apply(pareja: Pareja): Pareja = pareja.atacado.especie.recibirAtaqueDeArmaRoma(pareja)
 }
 
 case object ArmaFilosa extends Arma {

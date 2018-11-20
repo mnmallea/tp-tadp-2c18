@@ -51,12 +51,7 @@ object Movimientos {
   }
 
   case class UsarItem(item: ItemUsable) {
-    def apply(pareja: Pareja): Pareja = {
-      if (pareja.atacante.tieneItem(item))
-        item(pareja)
-      else
-        pareja
-    }
+    def apply(pareja: Pareja): Pareja = if (pareja.atacante.tieneItem(item)) item(pareja) else pareja
   }
 
   case object ComerseOponente {
