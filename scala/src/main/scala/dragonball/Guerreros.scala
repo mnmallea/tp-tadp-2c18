@@ -120,19 +120,13 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
     }.get
   }
 
-  def pelearContra(oponente: Guerrero)(planDeAtaque: PlanDeAtaque): ResultadoPelea = {
-    planDeAtaque.foldLeft(Peleando(Pareja(this, oponente)): ResultadoPelea) { (peleando, movimiento) =>
-      peleando.flatMap(p => {
-        val pDespuesDePelear = p.atacante.pelearRound(movimiento)(p.atacado)
-        pDespuesDePelear.estados match {
-          case (_, Muerto) => Ganador(pDespuesDePelear.atacante)
-          case (Muerto, _) => Ganador(pDespuesDePelear.atacado)
-          case _ => Peleando(pDespuesDePelear)
-        }
-      })
+  def pelearContra(oponente: Guerrero)(planDeAtaque: PlanDeAtaque): Pelea = {
+    planDeAtaque.foldLeft[Pelea](Peleando(this, oponente)) { (estadoPelea, movimiento) =>
+      estadoPelea flatMap (_ pelearRound movimiento)
     }
   }
 }
+
 
 trait EstadoGuerrero
 
