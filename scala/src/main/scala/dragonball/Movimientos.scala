@@ -70,13 +70,10 @@ object Movimientos {
     def apply(pareja: Pareja): Pareja = {
       pareja.mapAtacante(atacante => atacante.especie match {
         case saiyayin: Saiyajin if atacante.energia.actual >= atacante.energia.maximo / 2 =>
-          try {
-            val nuevoNivel = saiyayin.proximoNivelSaiyayin
-            atacante.especie(saiyayin estado Super(nuevoNivel))
-              .mapEnergia(_ modificarMaximo (_ * 5 * nuevoNivel))
-          } catch {
-            case _: SaiyajinException => atacante
-          }
+          saiyayin.proximoNivelSaiyayin.map { nivel =>
+            atacante.especie(saiyayin estado Super(nivel))
+              .mapEnergia(_ modificarMaximo (_ * 5 * nivel))
+          }.getOrElse(atacante)
         case _ => atacante
       })
     }
