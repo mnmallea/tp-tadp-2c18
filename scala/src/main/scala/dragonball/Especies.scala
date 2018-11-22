@@ -15,7 +15,7 @@ sealed trait Especie {
 
   def recibirAtaqueDeArmaRoma(pareja: Pareja): Pareja = {
     if (pareja.atacado.energia.actual < 300)
-      pareja mapAtacado(_ estado Inconsciente)
+      pareja mapAtacado (_ estado Inconsciente)
     else pareja
   }
 }
@@ -43,13 +43,7 @@ case class Saiyajin(estado: EstadoSayajin, tieneCola: Boolean = true) extends Es
 
   def estado(nuevoEstado: EstadoSayajin): Saiyajin = copy(estado = nuevoEstado)
 
-  def proximoNivelSaiyayin: Int = {
-    estado match {
-      case MonoGigante => throw new SaiyajinException
-      case Super(nivel) => nivel + 1
-      case _ => 1
-    }
-  }
+  def proximoNivelSaiyayin: Option[Int] = estado.proximoNivel
 
 }
 
@@ -63,7 +57,7 @@ case class Monstruo(formaDeDigerir: FormaDeDigerir) extends Especie with ConKi {
   override def comer(pareja: Pareja): Pareja = {
     if (pareja.atacante.energiaActual >= pareja.atacado.energiaActual)
       pareja.mapAtacante(formaDeDigerir(_)(pareja.atacado))
-          .mapAtacado(_ estado Muerto)
+        .mapAtacado(_ estado Muerto)
     else
       pareja
   }

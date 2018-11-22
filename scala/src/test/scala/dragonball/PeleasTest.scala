@@ -21,7 +21,7 @@ class PeleasTest extends FreeSpec with Matchers {
     "YamchaSS le dio pelea y no murio" in {
       /* Dr Gero va a pegar 6 ondas por lo que significa que va a perder 60 de energia y yamchaSS pierde 120 por las ondas
         mas 80 de los golpes ninjas */
-      drGero.pelearContra(yamchaSS)(planDeDrGeroContraYamcha) shouldBe Peleando(Pareja(drGero.disminuirEnergia(60), yamchaSS.disminuirEnergia(180)))
+      drGero.pelearContra(yamchaSS)(planDeDrGeroContraYamcha) shouldBe Peleando(drGero.disminuirEnergia(60), yamchaSS.disminuirEnergia(180))
     }
 
     val androide17 = Guerrero("A-17", List(), Energia(500, 500), Androide(), Vivo, List(GolpesNinja))

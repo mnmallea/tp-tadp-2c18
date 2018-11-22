@@ -3,9 +3,4 @@ package object dragonball {
   type PlanDeAtaque = List[Movimiento]
   type FormaDeDigerir = Guerrero => Guerrero => Guerrero
   type CambiarEstado = Guerrero => Guerrero
-  type ResultadoPelea = Either[Guerrero, Pareja]
-  type Ganador[Guerrero, Pareja] = Left[Guerrero, Pareja]
-  val Ganador = Left
-  type Peleando[Guerrero, Pareja] = Right[Guerrero, Pareja]
-  val Peleando = Right
 }
