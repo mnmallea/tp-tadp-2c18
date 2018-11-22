@@ -122,7 +122,7 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
 
   def pelearContra(oponente: Guerrero)(planDeAtaque: PlanDeAtaque): Pelea = {
     planDeAtaque.foldLeft[Pelea](Peleando(this, oponente)) { (estadoPelea, movimiento) =>
-      estadoPelea flatMap (_ pelearRound movimiento)
+      estadoPelea flatMap (Pelea(_)(movimiento))
     }
   }
 }
