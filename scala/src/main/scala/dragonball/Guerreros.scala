@@ -84,7 +84,7 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
       Pareja(this, otroGuerrero)
   }
 
-  def sumarRoundDejandoseFajar:Guerrero = copy(roundsDejandoseFajar = roundsDejandoseFajar + 1)
+  def sumarRoundDejandoseFajar: Guerrero = copy(roundsDejandoseFajar = roundsDejandoseFajar + 1)
 
   def resetearRoundsDejandoseFajar: Guerrero = copy(roundsDejandoseFajar = 0)
 
@@ -115,26 +115,9 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
   }
 
   def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(criterio: Criterio): Option[PlanDeAtaque] = {
-    type EstadoAtaque = (PlanDeAtaque, Pareja)
-
-    case class SimulacionBatalla(pareja: Pareja, plan: PlanDeAtaque = Nil) {
-      def movimientoMasEfectivo = movimientoMasEfectivoContra(pareja.atacado)(criterio)
-
-      def realizarMovimiento(movimiento: Movimiento) = copy(pareja.atacante.pelearRound(movimiento)(pareja.atacado), plan :+ movimiento)
-    }
-
-    (1 to cantidadDeRounds).foldLeft(Option(SimulacionBatalla(Pareja(this, oponente)))) { (maybeBatalla, _) =>
-      for (
-        batalla <- maybeBatalla;
-        movimiento <- batalla.movimientoMasEfectivo
-      ) yield batalla.realizarMovimiento(movimiento)
-      //      estadoOption.flatMap {
-      //        case (unosMovimientos: PlanDeAtaque, Pareja(atacante, atacado)) =>
-      //          movimientoMasEfectivoContra(atacado)(criterio).flatMap {
-      //            unMovimiento => Option((unosMovimientos ++ List(unMovimiento), atacante.pelearRound(unMovimiento)(atacado)))
-      //          }
-      //      }
-    }.map(_.plan)
+    (1 to cantidadDeRounds).foldLeft[SimulacionBatalla](Simulando(Pareja(this, oponente))) { (simulacion, _) =>
+      simulacion simularMejorMovimiento criterio
+    }.get
   }
 
   def pelearContra(oponente: Guerrero)(planDeAtaque: PlanDeAtaque): ResultadoPelea = {
