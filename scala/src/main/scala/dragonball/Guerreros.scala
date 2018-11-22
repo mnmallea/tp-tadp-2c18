@@ -6,7 +6,7 @@ import dragonball.Movimientos.DejarseFajar
 case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, especie: Especie, estado: EstadoGuerrero,
                     movimientos: List[Movimiento], roundsDejandoseFajar: Int = 0) {
 
-  def perderEsferas(): Guerrero = copy(inventario = inventario.filterNot(_.equals(EsferaDeDragon)))
+  def perderEsferas: Guerrero = copy(inventario = inventario.filterNot(_.equals(EsferaDeDragon)))
 
   def gastarMunicion(arma: Arma, cantidad: Int = 1): Guerrero = {
     def restarMunicion(cantidad: Int, items: List[Item]): List[Item] = {
@@ -26,6 +26,7 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
       } else
         items
     }
+
     copy(inventario = restarMunicion(cantidad, this.inventario))
   }
 
@@ -48,13 +49,15 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
 
   def estado(unEstado: EstadoGuerrero): Guerrero = copy(estado = unEstado)
 
-  def enegiaActual(cantidad: Int): Guerrero = this.copy(energia = energia.setActual(cantidad))
+  def mapEnergia(f: Energia => Energia): Guerrero = copy(energia = f(energia))
+
+  def enegiaActual(cantidad: Int): Guerrero = mapEnergia(_ setActual cantidad)
 
   def tieneSuficienteEnergia(energiaNecesaria: Int): Boolean = energia.actual >= energiaNecesaria
 
   def cantidadEnergiaAlExplotar(): Int = especie.tipoEnergia.cantidadDeEnergiaAlExplotar(energia.actual)
 
-  def explotar: Guerrero = copy(energia = energia.modificarMaximo(_ => 0), estado = Muerto)
+  def explotar: Guerrero = mapEnergia(_.modificarMaximo(_ => 0)).estado(Muerto)
 
   def serAtacadoPorExplosion(unaCantidad: Int): Guerrero = this.especie.recibirAtaqueDeExplosion(unaCantidad, this)
 
@@ -67,14 +70,13 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
     }
   }
 
-  //TODO habría que validar que tengas el movimiento???
   def realizarMovimientoContra(movimiento: Movimiento, otroGuerrero: Guerrero): Pareja = {
     if (puedeRealizarMovimiento(movimiento)) {
       movimiento(Pareja(this, otroGuerrero)).mapAtacante { guerrero =>
         movimiento match {
           case DejarseFajar =>
-            guerrero.copy(roundsDejandoseFajar = roundsDejandoseFajar + 1)
-          case _ => guerrero.copy(roundsDejandoseFajar = 0)
+            guerrero.sumarRoundDejandoseFajar
+          case _ => guerrero.resetearRoundsDejandoseFajar
         }
       }
     }
@@ -82,17 +84,21 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
       Pareja(this, otroGuerrero)
   }
 
+  def sumarRoundDejandoseFajar:Guerrero = copy(roundsDejandoseFajar = roundsDejandoseFajar + 1)
+
+  def resetearRoundsDejandoseFajar: Guerrero = copy(roundsDejandoseFajar = 0)
+
   def aprenderMovimientos(unosMovimientos: List[Movimiento]): Guerrero = copy(movimientos = movimientos ++ unosMovimientos)
 
   def tieneItem(item: Item): Boolean = inventario.contains(item)
 
-  def aumentarEnergia(cantidad: Int) = this.copy(energia = energia aumentar cantidad)
+  def aumentarEnergia(cantidad: Int): Guerrero = mapEnergia(_ aumentar cantidad)
 
-  def disminuirEnergia(disminucion: Int): Guerrero = this.copy(energia = energia disminuir disminucion).verificarEstado()
+  def disminuirEnergia(disminucion: Int): Guerrero = mapEnergia(_ disminuir disminucion).verificarEstado()
 
-  def verificarEstado(): Guerrero = if (this.energia.actual == 0) this.copy(estado = Muerto) else this
+  def verificarEstado(): Guerrero = if (this.energia.actual == 0) estado(Muerto) else this
 
-  def recuperarPotencial: Guerrero = copy(energia = energia.cargarAlMaximo)
+  def recuperarPotencial: Guerrero = mapEnergia(_.cargarAlMaximo)
 
   def movimientoMasEfectivoContra(otroGuerrero: Guerrero)(criterio: Criterio): Option[Movimiento] = {
     val parejaActual = Pareja(this, otroGuerrero)
@@ -111,22 +117,23 @@ case class Guerrero(nombre: String, inventario: List[Item], energia: Energia, es
   def planDeAtaqueContra(oponente: Guerrero, cantidadDeRounds: Int)(criterio: Criterio): Option[PlanDeAtaque] = {
     type EstadoAtaque = (PlanDeAtaque, Pareja)
 
-    case class SimulacionBatalla(pareja: Pareja, plan: PlanDeAtaque = Nil){
+    case class SimulacionBatalla(pareja: Pareja, plan: PlanDeAtaque = Nil) {
       def movimientoMasEfectivo = movimientoMasEfectivoContra(pareja.atacado)(criterio)
+
       def realizarMovimiento(movimiento: Movimiento) = copy(pareja.atacante.pelearRound(movimiento)(pareja.atacado), plan :+ movimiento)
     }
 
     (1 to cantidadDeRounds).foldLeft(Option(SimulacionBatalla(Pareja(this, oponente)))) { (maybeBatalla, _) =>
-      for(
+      for (
         batalla <- maybeBatalla;
         movimiento <- batalla.movimientoMasEfectivo
       ) yield batalla.realizarMovimiento(movimiento)
-//      estadoOption.flatMap {
-//        case (unosMovimientos: PlanDeAtaque, Pareja(atacante, atacado)) =>
-//          movimientoMasEfectivoContra(atacado)(criterio).flatMap {
-//            unMovimiento => Option((unosMovimientos ++ List(unMovimiento), atacante.pelearRound(unMovimiento)(atacado)))
-//          }
-//      }
+      //      estadoOption.flatMap {
+      //        case (unosMovimientos: PlanDeAtaque, Pareja(atacante, atacado)) =>
+      //          movimientoMasEfectivoContra(atacado)(criterio).flatMap {
+      //            unMovimiento => Option((unosMovimientos ++ List(unMovimiento), atacante.pelearRound(unMovimiento)(atacado)))
+      //          }
+      //      }
     }.map(_.plan)
   }
 

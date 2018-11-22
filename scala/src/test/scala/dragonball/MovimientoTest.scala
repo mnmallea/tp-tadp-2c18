@@ -122,7 +122,7 @@ class MovimientoTest extends FreeSpec with Matchers {
       }
 
       val cell = Guerrero("cell", List(), Energia(100, 200), Monstruo(aprenderTodosLosMovimientos), Vivo, List())
-      val humanoMago = humano.copy(movimientos = List(Magia(borrarItems)))
+      val humanoMago = humano.copy(movimientos = List(Magia(borrarItems, SobreOponente)))
 
       "si cell se come a un humano, humano muere " in {
         val resultado = ComerseOponente(Pareja(cell, humanoMago))
@@ -148,7 +148,7 @@ class MovimientoTest extends FreeSpec with Matchers {
         guerrero.disminuirEnergia(20)
       }
 
-      val resultadoMagia = Magia(quitarEnergia)(Pareja(androide, humano))
+      val resultadoMagia = Magia(quitarEnergia, SobreOponente)(Pareja(androide, humano))
 
       "si un androide quiere hacer magia queda todo igual" in {
         resultadoMagia.atacante shouldBe androide
@@ -156,7 +156,7 @@ class MovimientoTest extends FreeSpec with Matchers {
       }
 
       val namecheto = Guerrero("namename", List(), Energia(100, 200), Namekusein(), Vivo, List())
-      val resultadoMagia2 = Magia(quitarEnergia)(Pareja(namecheto, humano))
+      val resultadoMagia2 = Magia(quitarEnergia,SobreOponente)(Pareja(namecheto, humano))
 
       "si un namekusein quiere hacer magia sobre el opononte cambia energia del opononte" in {
         resultadoMagia2.atacado.energiaActual shouldBe 80
@@ -165,7 +165,7 @@ class MovimientoTest extends FreeSpec with Matchers {
       val humanoConItems = Guerrero("iron man", List(ArmaRoma), Energia(100, 200), Humano(), Vivo, List())
 
       "si un namekusein hace magia deja al oponente sin items" in {
-        val resultadoMagia = Magia(borrarItems)(Pareja(namecheto,humanoConItems))
+        val resultadoMagia = Magia(borrarItems, SobreOponente)(Pareja(namecheto,humanoConItems))
 
         resultadoMagia.atacado.inventario.size shouldBe 0
       }
