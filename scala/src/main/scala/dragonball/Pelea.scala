@@ -5,7 +5,7 @@ trait Pelea {
 }
 
 object Pelea {
-  def apply(pareja: Pareja)(movimiento: Movimiento): Pelea = {
+  def apply(movimiento: Movimiento)(pareja: Pareja): Pelea = {
     val Pareja(atacante, atacado) = pareja
     val trasPelea = atacante.pelearRound(movimiento)(atacado)
     trasPelea.estados match {

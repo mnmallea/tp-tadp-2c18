@@ -1,3 +1,0 @@
-package dragonball
-
-class SaiyajinException extends RuntimeException
